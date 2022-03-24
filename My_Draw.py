@@ -14,14 +14,16 @@ class DrawTool():
     def __init__(self) -> None:
         pass
 
-    def convertToPixel(self, x, y, color:QColor = QColor(0,0,0)):
-        return Pixel(x, y, color)
+    def convertToPixel(self, vec2d:Vector2D, color:QColor = QColor(0,0,0)):
+        return Pixel(vec2d, color)
 
-    def convertToArray(self, Array, color:QColor = QColor(0,0,0)):
-        FlatArray = np.array(Array).reshape(-1,2)
-        return [self.convertToPixel(i[0], i[1], color) for i in FlatArray]
+    def convertToArrayPixels(self, Array:Vector2D, color:QColor = QColor(0,0,0)):
+        FlatArray = np.array(Array).reshape(-1)
+        return [self.convertToPixel(i, color) for i in FlatArray]
 
     def drawLine(self, vec0:Vector2D, vec1:Vector2D, color:QColor = None):
+        #Инкрементный алгоритм растеризации
+        
         line = []
 
         dx = abs(vec1.x - vec0.x)
@@ -51,6 +53,7 @@ class Image(DrawTool, Matrix_Work):
     def __init__(self, Name:str = "", Layer:int = 0):
         self.Name = Name
         self.Layer = Layer
+        self.Size = 1
         self.PixelBuffer = []
 
     def putPixel(self, pixel:Pixel):
@@ -65,10 +68,29 @@ class Image(DrawTool, Matrix_Work):
         return SDraw
 
     def MirrorAxis(self, x:bool = False, y:bool = False):
-        for i in self.PixelBuffer:
-            print(i.x, i.y)
-            i = Pixel(super().Mirror2DAxis(i, x, y), color=i.color)
-            print(i.x, i.y)
+        for i, pixel in enumerate(self.PixelBuffer):
+            self.PixelBuffer[i] = Pixel(super().Mirror2DAxis(pixel, x, y), color=pixel.color)
 
-    # def convertToDict(self):
-    #     return {'Name':self.Name, 'Layer':self.Layer, 'Buffer':self.PixelBuffer}
+    def RotationAlf(self, alf = 0):
+        for i, pixel in enumerate(self.PixelBuffer):
+            self.PixelBuffer[i] = Pixel(super().Rotation2DAlf(pixel, alf), color=pixel.color)
+
+    def Scale(self, sx:int = 1, sy:int = 1): #Масштабирование
+        new_buffer = []
+        for pixel in self.PixelBuffer:
+            s = super().Scale2D(pixel, sx, sy)
+            new_buffer.extend(self.convertToArrayPixels(s, pixel.color))
+        self.PixelBuffer = new_buffer
+
+
+    def setColor(self, color:QColor): #Установка нового цвета
+        for i in range(len(self.PixelBuffer)):
+            self.PixelBuffer[i].color = color
+
+    def copy(self, Name:str = None, Layer:int = None):
+            new_cls = Image(self.Name if Name == None else Name, \
+                self.Layer if Layer == None else Layer)
+            new_cls.PixelBuffer = self.PixelBuffer.copy()
+            return new_cls
+
+        

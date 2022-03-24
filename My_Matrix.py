@@ -1,6 +1,5 @@
 from My_Vectors import *
-from cmath import cos, sin
-from math import radians
+from math import cos, radians, sin, tan
 
 import numpy as np
 
@@ -34,9 +33,16 @@ class Matrix_Work():
     def Rotation2DAlf(self, vec2d:Vector2D, alf = 0) -> Vector2D:
         alf = radians(alf)
         v = np.array([vec2d.x, vec2d.y])
-        m = np.array([[cos(alf), -sin(alf)],[sin(alf), cos(alf)]])
-        
-        return Vector2D(*np.around(v.dot(m)).astype(int))
+        #m = np.array([[cos(alf), -sin(alf)],[sin(alf), cos(alf)]]) #Стандартный алгоритм вращения
+        a = np.array([[1, -tan(alf/2)],[0, 1]])
+        b = np.array([[1, 0],[sin(alf), 1]])
+        c = np.array([[1, -tan(alf/2)],[0, 1]])
+
+        v = np.around(v.dot(a))
+        v = np.around(v.dot(b))
+        v = np.around(v.dot(c))
+
+        return Vector2D(*(v.astype(int)))
         
     def Rotation3DAlf(self, vec3d:Vector3D, alf = 0,  Axis:str = 'x') -> Vector3D:
         alf = radians(alf)
@@ -62,11 +68,8 @@ class Matrix_Work():
         v = np.array([vec2d.x, vec2d.y])
         m = np.array([[sx, 0],[0, sy]])
         s = np.around(v.dot(m)).astype(int)
-        
-        x = np.linspace(s[0]-sx+1, s[0]+sx-1, 2*sx-1,endpoint=True, dtype=int)
-        y = np.linspace(s[1]-sy+1, s[1]+sy-1, 2*sy-1,endpoint=True, dtype=int)
 
-        return [Vector2D(*[i,j]) for i in x for j in y]
+        return [Vector2D(*[i,j]) for i in range(s[0]-abs(sx)+1, s[0]+abs(sx)) for j in range(s[1]-abs(sy)+1, s[1]+abs(sy))]
 
     def Scale2DArray(self, Array, sx:int = 1, sy:int = 1) -> list:
         return [self.Scale2D(i, sx, sy) for i in Array]

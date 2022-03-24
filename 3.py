@@ -62,6 +62,7 @@ class Main_Window(QWidget, QPainter, DrawTool):
         keys = list(self.FullImage.keys())
         keys.sort(reverse=True)
         All = []
+
         for k, v in self.FullImage.items():
              for i in v:
                  All.extend(i.PixelBuffer)
@@ -132,39 +133,41 @@ if __name__ == '__main__':
 
     wind.pushImage(drawAxis(10))
 
-    # # for i in range(0, 100):
-    # #     wind.putPixel(Pixel(i,i, QColor(255,0,0)))
-
     Line = Image('Line',1)
     Line.drawLine(Vector2D(-5, 10), Vector2D(5,10), QColor(255,0,0))
-    #DLine = Line.drawLine(Vector2D(-5, 10), Vector2D(5,10), QColor(255,0,0))
-    # #wind.putPixel(Matrix_Work().Mirror2DAxisArray(line, x = True))
-    Line.MirrorAxis(False, True)
-    wind.pushImage(Line)
-    # MLine = Image('Mirror',1)
-    # MLine.putArray(tools.convertToArray(Matrix_Work().Mirror2DAxisArray(DLine, x = True,y = True), QColor(0,255,0)))
-    # #wind.putArray(wind.convertToArray(MLine, QColor(255,0,0)))
+  
+    MLine = Line.copy('Mirror',1)
 
-    # #RLine = Matrix_Work().Rotation2DAlfArray(line, 45)
-    # #wind.putArray(wind.convertToArray(RLine, QColor(255,0,0)))
+    MLine.MirrorAxis(False, True)
+    
+    RLine = Line.copy('Rotation',1)
 
-    # SMLine = Matrix_Work().Scale2DArray(DLine, 2, 2)
-    # SLine = Image('Scale',2)
-    # SLine.putArray(tools.convertToArray(SMLine, QColor(255,0,0)))
+    RLine.RotationAlf(45)
 
-    # SMLine = Matrix_Work().Scale2DArray(DLine, 10, 10)
-    # RMLine = Matrix_Work().Rotation2DAlfArray(tools.convertToArray(SMLine), 45)
+    SLine = Line.copy('Scale',2)
 
-    # RLine = Image('ScaleAndRotate',3)
-    # RLine.putArray(tools.convertToArray(RMLine, QColor(255,0,0)))
+    SLine.Scale(2, 2)
 
-    # RLine2 = Image('GreenLayer',4)
-    # RLine2.putArray(tools.convertToArray(RMLine, QColor(0,255,0)))
+    SLine2 = SLine.copy(Layer=3)
+    SLine2.Scale(2,2)
+    SLine2.setColor(QColor(0,255,0))
 
-    # MLine2 = Image('Mirror2',1)
-    # MLine2.putArray(tools.convertToArray(Matrix_Work().Mirror2DAxisArray(tools.convertToArray(RMLine), x = True,y = True), QColor(0,255,0)))
+    SRCLine = Line.copy("SRC", 4)
+    SRCLine.Scale(20, 20)
+    SRCLine.RotationAlf(45)
+    SRCLine.setColor(QColor(0,0,255))
 
-    # wind.pushAllImage([Line, SLine, RLine, RLine2, MLine, MLine2])
+    SRCLine2 = SRCLine.copy("SRC2", 4)
+    SRCLine2.MirrorAxis(True,True)
+    
+
+    SSLine = SRCLine2.copy("SS", 5)
+    SSLine.setColor(QColor(0,0,0))
+    SSLine.Scale(1, -1)
+
+    print(SSLine.PixelBuffer[0].x, SSLine.PixelBuffer[0].y)
+    print(SSLine.PixelBuffer[-1].x, SSLine.PixelBuffer[-1].y)
+    wind.pushAllImage([Line, MLine, RLine, SLine, SLine2, SRCLine, SRCLine2, SSLine]) 
 
     wind.show() #Вывод окна приложения на экран
     sys.exit(app.exec_()) #Процесс завершения работы
