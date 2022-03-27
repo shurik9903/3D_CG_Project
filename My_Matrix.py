@@ -24,10 +24,10 @@ class Matrix_Work():
         m = np.array([[x, 0, 0],[0, y, 0], [0, 0, z]])
         return Vector3D(*v.dot(m))
     
-    def Mirror2DAxisArray(self, Array, x:bool = False, y:bool = False) -> list:
+    def Mirror2DAxisArray(self, Array:list[Vector2D], x:bool = False, y:bool = False) -> list:
         return [self.Mirror2DAxis(i, x, y) for i in Array]
 
-    def Mirror3DAxisArray(self, Array, x:bool = False, y:bool = False, z:bool = False) -> list:
+    def Mirror3DAxisArray(self, Array:list[Vector3D], x:bool = False, y:bool = False, z:bool = False) -> list:
         return [self.Mirror2DAxis(i, x, y, z) for i in Array]
 
     def Rotation2DAlf(self, vec2d:Vector2D, alf = 0) -> Vector2D:
@@ -58,64 +58,26 @@ class Matrix_Work():
         
         return Vector3D(*np.around(v.dot(m)).astype(int))
 
-    def Rotation2DAlfArray(self, Array, alf = 0) -> list:
+    def Rotation2DAlfArray(self, Array:list[Vector2D], alf = 0) -> list:
         return [self.Rotation2DAlf(i, alf) for i in Array]
 
-    def Rotation3DAlfArray(self, Array, alf = 0,  Axis:str = 'x') -> list:
+    def Rotation3DAlfArray(self, Array:list[Vector3D], alf = 0,  Axis:str = 'x') -> list:
         return [self.Rotation3DAlf(i, alf, Axis) for i in Array]
 
-    def Scale2D(self, W, H, vec2d:Vector2D, sx:int = 1, sy:int = 1, ) -> list:
+    def Scale2D(self, W, H, vec2d:Vector2D, sx:float, sy:float) -> list:
         v = np.array([vec2d.x, vec2d.y])
         m = np.array([[sx, 0],[0, sy]])
         s = np.around(v.dot(m)).astype(int)
 
         return [Vector2D(*[i,j]) for i in range(s[0]-abs(W)+1, s[0]+abs(W)) for j in range(s[1]-abs(H)+1, s[1]+abs(H))]
 
-
-    def Down_Scale2D(self, sx:int, sy:int, Width:int, Height:int, ImageBuffer):
-
-        ImageFinal = {}
-
-        thumbwidth = sx
-        thumbheight = sy
-
-        xscale = thumbwidth / Width
-        yscale = thumbheight / Height
-
-        threshold = 0.5 / (xscale * yscale)
-        yend = 0.0
-
-        for f in range(0, thumbheight):
-
-            ystart = yend
-            yend = (f + 1) / yscale
-
-            if (yend >= Height): yend = Height - 0.000001
-            xend = 0.0
-
-            for g in range(0, thumbwidth):
-
-                xstart = xend
-                xend = (g + 1) / xscale
-                if (xend >= Width): xend = Width - 0.000001
-                sum = 0.0
-
-                for y in range(int(ystart), int(yend)):
-
-                    yportion = 1.0
-                    if (y == int(ystart)): yportion -= ystart - y
-                    if (y == int(yend)): yportion -= y+1 - yend
-
-                    for x in range(int(xstart, int(xend))):
-
-                        xportion = 1.0
-                        if (x == int(xstart)): xportion -= xstart - x
-                        if (x == int(xend)): xportion -= x+1 - xend
-                        sum += ImageBuffer[y][x] * yportion * xportion
-                    
-                ImageFinal.setdefault(x, {})[y] =  1 if (sum > threshold) else 0
-            
-        
-
-    def Scale2DArray(self, Array, sx:int = 1, sy:int = 1) -> list:
+    def Scale2DArray(self, Array:list[Vector2D], sx:float, sy:float) -> list:
         return [self.Scale2D(i, sx, sy) for i in Array]
+
+    def Shear2D(self, vec2d:Vector2D, sx:float, sy:float):
+        v = np.array([vec2d.x, vec2d.y])
+        m = np.array([[1, sx],[sy, 1]])
+        return Vector2D(*np.around(v.dot(m)).astype(int))
+
+    def Shear2DArray(self, Array:list[Vector2D], sx:float, sy:float):
+        return [self.Shear2D(i, sx, sy) for i in Array]

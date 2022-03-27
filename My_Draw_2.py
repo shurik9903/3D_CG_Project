@@ -125,7 +125,7 @@ class Image_2(DrawTool, Matrix_Work):
             for j in value:
                 self.PixelBuffer[i][j] = color
 
-    def Scale(self, sx:int = 1, sy:int = 1): #Масштабирование
+    def Scale(self, sx:float, sy:float): #Масштабирование
 
         if sx == 1 and sy == 1: return
 
@@ -142,27 +142,31 @@ class Image_2(DrawTool, Matrix_Work):
         self.PixelBuffer.clear()
         self.putArray(new_buffer)
 
-    def Scale_2(self, sx:int, sy:int, recalSize:bool = True):
-        new_buffer = {}
-
-        if recalSize: self.recalculateSize()
-
-        new_w = round(self.Width * sx)
-        new_y = round(self.Height * sx)
-        width = self.Width
-        height = self.Height
-
-        for x in range(0, new_w):  
-            for y in range(0, new_y):
-                srcX = int( round( float(x) / float(new_w) * float(width) ) )
-                srcY = int( round( float(y) / float(new_y) * float(height) ) )
-                srcX = min( srcX, width-1)
-                srcY = min( srcY, height-1)
-                #print(self.PixelBuffer, srcX, srcY, )
-                new_buffer.setdefault(x, {})[y] = QColor(0,0,0) if self.getPixel(srcX, srcY) == None else self.getPixel(srcX, srcY).color
+    def Shear(self, sx:int, sy:int): #Смещение
+        new_buffer = []
+        for i, value in self.PixelBuffer.items():
+            for j,v in value.items():
+                new_buffer.append(Pixel(super().Shear2D(Vector2D(*(i,j)), sx, sy), color = v))
 
         self.PixelBuffer.clear()
-        self.PixelBuffer = new_buffer
+        self.putArray(new_buffer)
+
+    # def Scale_2(self, sx:int = 1, sy:int = 1):
+
+    #     self.recalculateSize()
+    #     new_W, new_H = self.Width * sx, self.Height * sy
+    #     scrW, scrH = self.Width, self.Height
+
+    #     retimg = {}
+    #     for i in range(new_H-1):
+    #         for j in range(new_W-1):
+    #             scrx=round(i*(scrH/new_H))
+    #             scry=round(j*(scrW/new_W))
+    #             retimg.setdefault(j, {})[i] = QColor(0,0,0) if self.getPixel(scrx, scry) == None else self.getPixel(scrx, scry)
+    #     self.PixelBuffer.clear()
+    #     self.PixelBuffer = retimg
+
+
 
 
     def copy(self, Name:str = None, Layer:int = None): #Копия
