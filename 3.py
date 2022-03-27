@@ -159,14 +159,16 @@ if __name__ == '__main__':
 
     SRCLine2 = SRCLine.copy("SRC2", 4)
     SRCLine2.MirrorAxis(True,True)
+    SRCLine2.setColor(QColor(255,50,20))
     
 
-    SSLine = SRCLine2.copy("SS", 5)
+    #SSLine = SRCLine2.copy("SS", 5)
+    SSLine = Image("SS", 5)
+    SSLine.drawLine(Vector2D(-5, 10), Vector2D(5,10), QColor(255,0,0))
     SSLine.setColor(QColor(0,0,0))
-    SSLine.Scale(1, -1)
+    SSLine.Scale(20, 20)
+    #SSLine.Scale(1, -1)
 
-    print(SSLine.PixelBuffer[0].x, SSLine.PixelBuffer[0].y)
-    print(SSLine.PixelBuffer[-1].x, SSLine.PixelBuffer[-1].y)
     wind.pushAllImage([Line, MLine, RLine, SLine, SLine2, SRCLine, SRCLine2, SSLine]) 
 
     wind.show() #Вывод окна приложения на экран

@@ -64,12 +64,12 @@ class Matrix_Work():
     def Rotation3DAlfArray(self, Array, alf = 0,  Axis:str = 'x') -> list:
         return [self.Rotation3DAlf(i, alf, Axis) for i in Array]
 
-    def Scale2D(self, vec2d:Vector2D, sx:int = 1, sy:int = 1) -> list:
+    def Scale2D(self, W, H, vec2d:Vector2D, sx:int = 1, sy:int = 1, ) -> list:
         v = np.array([vec2d.x, vec2d.y])
         m = np.array([[sx, 0],[0, sy]])
         s = np.around(v.dot(m)).astype(int)
 
-        return [Vector2D(*[i,j]) for i in range(s[0]-abs(sx)+1, s[0]+abs(sx)) for j in range(s[1]-abs(sy)+1, s[1]+abs(sy))]
+        return [Vector2D(*[i,j]) for i in range(s[0]-abs(W)+1, s[0]+abs(W)) for j in range(s[1]-abs(H)+1, s[1]+abs(H))]
 
     def Scale2DArray(self, Array, sx:int = 1, sy:int = 1) -> list:
         return [self.Scale2D(i, sx, sy) for i in Array]
