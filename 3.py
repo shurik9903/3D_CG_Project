@@ -5,7 +5,7 @@ from PyQt5.QtGui import QColor, QPainter, QPen
 import numpy as np
 import sys
 
-from My_Draw import *
+from My_Draw_2 import *
 from My_Matrix import *
 from My_Vectors import *
 
@@ -26,7 +26,7 @@ class Main_Window(QWidget, QPainter, DrawTool):
         self.resize(SizeX,SizeY) #Выставление размера окна
         self.setFixedSize(SizeX, SizeY) #Выставление фиксированого размера окна
 
-    def pushImage(self, PImage:Image):
+    def pushImage(self, PImage:Image_2):
         if not self.FullImage.get(PImage.Layer) == None:
             self.FullImage.get(PImage.Layer).append(PImage)
         else:
@@ -65,7 +65,8 @@ class Main_Window(QWidget, QPainter, DrawTool):
 
         for k, v in self.FullImage.items():
              for i in v:
-                 All.extend(i.PixelBuffer)
+                 if isinstance(i, Image_2):
+                    All.extend(i.getArrayPixel())
 
         for i in All:
             pen.setColor(i.color)
@@ -102,7 +103,7 @@ def drawAxis(valueOfDivision):
     WWidth = wind.size().width()
     WHight = wind.size().height() 
 
-    Axis = Image("Axis", 0)
+    Axis = Image_2("Axis", 0)
 
     for i in range(-round(WWidth/2), round(WWidth/2), valueOfDivision):
         Axis.drawLine(Vector2D(i,round(valueOfDivision/5)), Vector2D(i,round(-valueOfDivision/5)))
@@ -133,43 +134,51 @@ if __name__ == '__main__':
 
     wind.pushImage(drawAxis(10))
 
-    Line = Image('Line',1)
+    Line = Image_2('Line',1)
     Line.drawLine(Vector2D(-5, 10), Vector2D(5,10), QColor(255,0,0))
-  
+    wind.pushImage(Line)
+
     MLine = Line.copy('Mirror',1)
-
     MLine.MirrorAxis(False, True)
-    
-    RLine = Line.copy('Rotation',1)
+    wind.pushImage(MLine)
 
+    RLine = Line.copy('Rotation',1)
     RLine.RotationAlf(45)
+    wind.pushImage(RLine)
 
     SLine = Line.copy('Scale',2)
+    SLine.setColor(QColor(0,0,255))
+    SLine.Scale(10, 10)
+    SLine.Scale_2(1, 1)
+    wind.pushImage(SLine)
 
-    SLine.Scale(2, 2)
 
-    SLine2 = SLine.copy(Layer=3)
-    SLine2.Scale(2,2)
-    SLine2.setColor(QColor(0,255,0))
+    # SLine2 = SLine.copy(Layer=3)
+    # SLine2.Scale(2,2)
+    # SLine2.setColor(QColor(0,255,0))
+    # wind.pushImage(SLine2)
 
-    SRCLine = Line.copy("SRC", 4)
-    SRCLine.Scale(20, 20)
-    SRCLine.RotationAlf(45)
-    SRCLine.setColor(QColor(0,0,255))
+    # SRCLine = Line.copy("SRC", 4)
+    # SRCLine.Scale(20, 20)
+    # SRCLine.RotationAlf(45)
+    # SRCLine.setColor(QColor(0,0,255))
+    # wind.pushImage(SRCLine)
 
-    SRCLine2 = SRCLine.copy("SRC2", 4)
-    SRCLine2.MirrorAxis(True,True)
-    SRCLine2.setColor(QColor(255,50,20))
-    
+    # SRCLine2 = SRCLine.copy("SRC2", 4)
+    # SRCLine2.MirrorAxis(True,True)
+    # SRCLine2.setColor(QColor(255,50,20))
+    # wind.pushImage(SRCLine2)
 
-    #SSLine = SRCLine2.copy("SS", 5)
-    SSLine = Image("SS", 5)
-    SSLine.drawLine(Vector2D(-5, 10), Vector2D(5,10), QColor(255,0,0))
-    SSLine.setColor(QColor(0,0,0))
-    SSLine.Scale(20, 20)
-    #SSLine.Scale(1, -1)
+    # SSLine = SRCLine2.copy("SS", 5)
+    # # SSLine = Image("SS", 5)
+    # # SSLine.drawLine(Vector2D(-5, 10), Vector2D(5,10), QColor(255,0,0))
+    # SSLine.setColor(QColor(0,0,0))
+    # #SSLine.Scale(20, 20)
+    # #SSLine.Scale(1, -1)
+    # wind.pushImage(SSLine)
 
-    wind.pushAllImage([Line, MLine, RLine, SLine, SLine2, SRCLine, SRCLine2, SSLine]) 
+
+    # wind.pushAllImage([Line, MLine, RLine, SLine, SLine2, SRCLine, SRCLine2, SSLine]) 
 
     wind.show() #Вывод окна приложения на экран
     sys.exit(app.exec_()) #Процесс завершения работы

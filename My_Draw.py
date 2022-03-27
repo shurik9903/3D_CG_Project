@@ -12,6 +12,9 @@ class Pixel(Vector2D):
         super().__init__(vec2d.x, vec2d.y)
         self.color = QColor(0,0,0) if color == None else color
 
+    def __str__(self) -> str:
+        return super().__str__(f'x:{self.x}, y:{self.y}, color:{self.color}')
+
 class DrawTool():
     def __init__(self) -> None:
         pass
@@ -111,7 +114,7 @@ class Image(DrawTool, Matrix_Work):
 
         self.ScaleHeight = round(sx * self.ScaleHeight) 
         self.ScaleWidth = round(sy * self.ScaleWidth)
-        
+
         new_buffer = []
         for pixel in self.PixelBuffer:
             s = super().Scale2D(self.ScaleWidth, self.ScaleHeight, pixel, sx, sy)

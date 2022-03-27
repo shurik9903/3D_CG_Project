@@ -71,5 +71,51 @@ class Matrix_Work():
 
         return [Vector2D(*[i,j]) for i in range(s[0]-abs(W)+1, s[0]+abs(W)) for j in range(s[1]-abs(H)+1, s[1]+abs(H))]
 
+
+    def Down_Scale2D(self, sx:int, sy:int, Width:int, Height:int, ImageBuffer):
+
+        ImageFinal = {}
+
+        thumbwidth = sx
+        thumbheight = sy
+
+        xscale = thumbwidth / Width
+        yscale = thumbheight / Height
+
+        threshold = 0.5 / (xscale * yscale)
+        yend = 0.0
+
+        for f in range(0, thumbheight):
+
+            ystart = yend
+            yend = (f + 1) / yscale
+
+            if (yend >= Height): yend = Height - 0.000001
+            xend = 0.0
+
+            for g in range(0, thumbwidth):
+
+                xstart = xend
+                xend = (g + 1) / xscale
+                if (xend >= Width): xend = Width - 0.000001
+                sum = 0.0
+
+                for y in range(int(ystart), int(yend)):
+
+                    yportion = 1.0
+                    if (y == int(ystart)): yportion -= ystart - y
+                    if (y == int(yend)): yportion -= y+1 - yend
+
+                    for x in range(int(xstart, int(xend))):
+
+                        xportion = 1.0
+                        if (x == int(xstart)): xportion -= xstart - x
+                        if (x == int(xend)): xportion -= x+1 - xend
+                        sum += ImageBuffer[y][x] * yportion * xportion
+                    
+                ImageFinal.setdefault(x, {})[y] =  1 if (sum > threshold) else 0
+            
+        
+
     def Scale2DArray(self, Array, sx:int = 1, sy:int = 1) -> list:
         return [self.Scale2D(i, sx, sy) for i in Array]
