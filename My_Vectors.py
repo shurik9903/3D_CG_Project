@@ -8,6 +8,9 @@ class Vector2D():
 
     def get(self):
         return (self.x, self.y)
+
+    def __str__(self) -> str:
+        return f'{self.x}, {self.y}'
 class Vector3D():
     def __init__(self, *xyz):
         self.x = xyz[0]
@@ -19,3 +22,6 @@ class Vector3D():
 
     def get(self):
         return (self.x, self.y, self.z)
+
+    def __str__(self) -> str:
+        return f'{self.x}, {self.y}, {self.z}'

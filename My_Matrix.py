@@ -64,15 +64,81 @@ class Matrix_Work():
     def Rotation3DAlfArray(self, Array:list[Vector3D], alf = 0,  Axis:str = 'x') -> list:
         return [self.Rotation3DAlf(i, alf, Axis) for i in Array]
 
-    def Scale2D(self, W, H, vec2d:Vector2D, sx:float, sy:float) -> list:
+    def Move2D(self, vec2d:Vector2D, mx:int, my:int) -> Vector2D:
+        return Vector2D(*(vec2d.x + mx, vec2d.y + my))
+
+    def Move3D(self, vec3d:Vector3D, mx:int, my:int, mz:int) -> Vector3D:
+        return Vector2D(*(vec3d.x + mx, vec3d.y + my, vec3d.z + mz))
+
+    def Translate2D(self, vec2d:Vector2D, Pvec2d:Vector2D) -> Vector2D:
+        v = np.array([vec2d.x, vec2d.y, 1]) 
+        m = np.array([[1, 0, 0],[0, 1, 0],[Pvec2d.x, Pvec2d.y, 1]])
+        v = v.dot(m)
+        return Vector2D(*np.around(v).astype(int))
+
+    def Translate3D(self, vec3d:Vector3D, Pvec3d:Vector3D) -> Vector3D:
+        v = np.array([vec3d.x, vec3d.y, vec3d.z]) 
+        m = np.array([[1, 0, 0, 0],[0, 1, 0, 0], [0, 0, 1, 0],[Pvec3d.x, Pvec3d.y, Pvec3d.z, 1]])
+        v = v.dot(m)
+        return Vector3D(*np.around(v).astype(int))
+     
+    def Resize2D(self, W, H, Vec2d:Vector2D) -> list:
+        return [Vector2D(*[i,j]) for i in range(Vec2d.x - abs(W)+1, Vec2d.x + abs(W)) for j in range(Vec2d.y - abs(H)+1, Vec2d.y + abs(H))]
+
+    
+    def Scale2D(self, vec2d:Vector2D, sx:float, sy:float) -> Vector2D:
         v = np.array([vec2d.x, vec2d.y])
         m = np.array([[sx, 0],[0, sy]])
         s = np.around(v.dot(m)).astype(int)
 
-        return [Vector2D(*[i,j]) for i in range(s[0]-abs(W)+1, s[0]+abs(W)) for j in range(s[1]-abs(H)+1, s[1]+abs(H))]
+        return Vector2D(*s)
+
+    def Scale3D(self, vec3d:Vector2D, sx:float, sy:float, sz:float) -> Vector3D:
+        v = np.array([vec3d.x, vec3d.y, vec3d.z])
+        m = np.array([[sx, 0, 0],[0, sy, 0], [0, 0, sz]])
+        s = np.around(v.dot(m)).astype(int)
+
+        return Vector3D(*s)
 
     def Scale2DArray(self, Array:list[Vector2D], sx:float, sy:float) -> list:
         return [self.Scale2D(i, sx, sy) for i in Array]
+
+    def Scale3DArray(self, Array:list[Vector3D], sx:float, sy:float, sz:float) -> list:
+        return [self.Scale3D(i, sx, sy, sz) for i in Array]
+
+    def ResScale2D(self, W, H, vec2d:Vector2D, sx:float, sy:float) -> list:
+        s = self.Scale2D(vec2d, sx, sy)
+        return self.Resize2D(W, H, s)
+
+    def ResScale2DToPoint(self, W,H,vec2d:Vector2D, sx:float, sy:float, Pvec2d:Vector2D = Vector2D(*(0,0))):
+        #v = np.array([vec2d.x, vec2d.y, 1]) 
+        
+        v = self.Translate2D(vec2d, Vector2D(*(-Pvec2d.x, -Pvec2d.y)))
+
+        #m = np.array([[1, 0, 0],[0, 1, 0],[-Pvec2d.x, -Pvec2d.y, 1]])
+        #v = v.dot(m)
+
+        v = self.Scale2D(v, sx, sy)
+
+        #m = np.array([[sx, 0, 0],[0, sy, 0],[0, 0, 1]])
+        #v = v.dot(m)
+
+        v = self.Translate2D(v, Pvec2d)
+
+        #m = np.array([[1, 0, 0],[0, 1, 0],[Pvec2d.x, Pvec2d.y, 1]])
+        #v = v.dot(m)
+        
+        
+
+        #s = np.around(v).astype(int)
+
+        return self.Resize2D(W, H, v)
+
+    def ResScale2DArray(self, Array:list[Vector2D], sx:float, sy:float) -> list:
+        return [self.ResScale2D(i, sx, sy) for i in Array]
+
+    def ResScale2DToPointArray(self, Array:list[Vector2D], sx:float, sy:float, Pvec2d:Vector2D = Vector2D(*(0,0))):
+        return [self.ResScale2DToPoint(i, sx, sy, Pvec2d) for i in Array]
 
     def Shear2D(self, vec2d:Vector2D, sx:float, sy:float):
         v = np.array([vec2d.x, vec2d.y])
