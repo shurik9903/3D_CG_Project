@@ -165,7 +165,27 @@ class Image_2(DrawTool, Matrix_Work):
         self.PixelBuffer.clear()
         self.putArray(new_buffer)
 
-    
+    def Move(self, Pvec2d:Vector2D):
+        new_buffer = []
+
+        center =self.recalculateSize()
+        center = Vector2D(*( mean((center[0],center[1])), mean((center[2],center[3]))))
+       
+        for i, value in self.PixelBuffer.items():
+            for j,v in value.items():
+                new_buffer.append(Pixel(super().Move2D(Vector2D(*(i,j)), Pvec2d, center), color = v))
+
+        self.PixelBuffer.clear()
+        self.putArray(new_buffer)
+
+    def Translate(self, Pvec2d:Vector2D = Vector2D(*(0,0))):
+        new_buffer = []
+        for i, value in self.PixelBuffer.items():
+            for j,v in value.items():
+                new_buffer.append(Pixel(super().Translate2D(Vector2D(*(i,j)), Pvec2d), color = v))
+
+        self.PixelBuffer.clear()
+        self.putArray(new_buffer)
 
     def Shear(self, sx:int, sy:int): #Смещение
         new_buffer = []
