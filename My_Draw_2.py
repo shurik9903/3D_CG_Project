@@ -1,9 +1,12 @@
+from statistics import mean
 from PyQt5.QtGui import QColor
 from sympy import Matrix
 from My_Vectors import *
 from My_Matrix import Matrix_Work
 
 from copy import deepcopy
+
+
 
 import numpy as np
 
@@ -92,8 +95,8 @@ class Image_2(DrawTool, Matrix_Work):
             for j in value:
                 min_y,max_y = min(j,min_y), max(j,max_y)
 
-        self.Width = abs(max_x - min_x) if not max_x == min_x else 1
-        self.Height = abs(max_y - min_y) if not max_y == min_y else 1
+        self.Width = abs(max_x - min_x)+1 if not max_x == min_x else 1
+        self.Height = abs(max_y - min_y)+1 if not max_y == min_y else 1
 
         return (max_x, min_x, max_y, min_y)
 
@@ -136,11 +139,33 @@ class Image_2(DrawTool, Matrix_Work):
 
         for i, value in self.PixelBuffer.items():
              for j,v in value.items():
-                 s = super().Scale2D(self.ScaleWidth, self.ScaleHeight, Vector2D(*(i,j)), sx, sy)
+                 s = super().ResScale2D(self.ScaleWidth, self.ScaleHeight, Vector2D(*(i,j)), sx, sy)
                  new_buffer.extend([Pixel(vec, color = v) for vec in s])
         
         self.PixelBuffer.clear()
         self.putArray(new_buffer)
+
+    def ScaleToPoint(self, sx:float, sy:float, Pvec2d:Vector2D = None):
+        if sx == 1 and sy == 1: return
+
+        if Pvec2d == None:
+            result = self.recalculateSize()
+            Pvec2d = Vector2D(*( mean((result[0],result[1])), mean((result[2],result[3]))))
+       
+        self.ScaleHeight = round(sx * self.ScaleHeight) 
+        self.ScaleWidth = round(sy * self.ScaleWidth)
+
+        new_buffer = []
+
+        for i, value in self.PixelBuffer.items():
+             for j,v in value.items():
+                 s = super().ResScale2DToPoint(self.ScaleWidth, self.ScaleHeight, Vector2D(*(i,j)), sx, sy, Pvec2d)
+                 new_buffer.extend([Pixel(vec, color = v) for vec in s])
+        
+        self.PixelBuffer.clear()
+        self.putArray(new_buffer)
+
+    
 
     def Shear(self, sx:int, sy:int): #Смещение
         new_buffer = []

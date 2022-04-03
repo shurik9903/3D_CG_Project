@@ -146,33 +146,40 @@ if __name__ == '__main__':
     RLine.RotationAlf(45)
     wind.pushImage(RLine)
 
-    SLine = Line.copy('Scale',2)
+    SLine = Line.copy('Scale',-1)
     SLine.setColor(QColor(0,0,255))
-    SLine.Scale(10, 10)
+    SLine.ScaleToPoint(10, 10)
+    
+    #SLine.ScaleToPoint(10, 10, Vector2D(*(-15, 10)))
+    #SLine.ScaleToPoint(10, 10, Vector2D(*(0, 0)))
+
     wind.pushImage(SLine)
 
-    SLine3 = Line.copy('Scale3',3)
-    SLine3.setColor(QColor(0,255,255))
-    SLine3.Scale(-10, -10)
-    SLine3.Shear(2,0)
-    wind.pushImage(SLine3)
+    # SLine3 = Line.copy('Scale3',3)
+    # SLine3.setColor(QColor(0,255,255))
+    # SLine3.Scale(-10, -10)
+    # SLine3.Shear(2,0)
+    # wind.pushImage(SLine3)
 
 
-    SLine2 = SLine.copy(Layer=3)
-    SLine2.Scale(2,2)
-    SLine2.setColor(QColor(0,255,0))
-    wind.pushImage(SLine2)
+    # SLine2 = SLine.copy(Layer=3)
+    # SLine2.Scale(2,2)
+    # SLine2.setColor(QColor(0,255,0))
+    # wind.pushImage(SLine2)
 
-    SRCLine = Line.copy("SRC", 4)
-    SRCLine.Scale(20, 20)
-    SRCLine.RotationAlf(45)
-    SRCLine.setColor(QColor(255,0,255))
-    wind.pushImage(SRCLine)
+    # SRCLine = Line.copy("SRC", 4)
+    # SRCLine.Scale(20, 20)
+    # SRCLine.RotationAlf(45)
+    # SRCLine.setColor(QColor(255,0,255))
+    # wind.pushImage(SRCLine)
 
-    SRCLine2 = SRCLine.copy("SRC2", 4)
-    SRCLine2.MirrorAxis(True,True)
-    SRCLine2.setColor(QColor(255,50,20))
-    wind.pushImage(SRCLine2)
+    # SRCLine2 = SRCLine.copy("SRC2", 4)
+    # SRCLine2.MirrorAxis(True,True)
+    # SRCLine2.setColor(QColor(255,50,20))
+    # wind.pushImage(SRCLine2)
+
+
+
 
     # SSLine = SRCLine2.copy("SS", 5)
     # # SSLine = Image("SS", 5)
