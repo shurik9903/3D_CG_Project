@@ -64,14 +64,14 @@ class Matrix_Work():
     def Rotation3DAlfArray(self, Array:list[Vector3D], alf = 0,  Axis:str = 'x') -> list:
         return [self.Rotation3DAlf(i, alf, Axis) for i in Array]
 
-    def Move2D(self, vec2d:Vector2D, Pvec2d:Vector2D, center:Vector2D = Vector2D(*(0,0))) -> Vector2D:
+    def Move2D(self, vec2d:Vector2D, Pvec2d:Vector2D, center:Vector2D = Vector2D(0,0)) -> Vector2D:
         new_x = center.x - vec2d.x
         new_y = center.y - vec2d.y
 
         new_x = Pvec2d.x + new_x
         new_y = Pvec2d.y + new_y
 
-        return Vector2D(*(new_x,new_y))
+        return Vector2D(new_x,new_y)
 
     def Translate2D(self, vec2d:Vector2D, Pvec2d:Vector2D) -> Vector2D:
         v = np.array([vec2d.x, vec2d.y, 1]) 
@@ -118,9 +118,9 @@ class Matrix_Work():
         s = self.Scale2D(vec2d, sx, sy)
         return self.Resize2D(W, H, s)
 
-    def ResScale2DToPoint(self, W,H,vec2d:Vector2D, sx:float, sy:float, Pvec2d:Vector2D = Vector2D(*(0,0))):
+    def ResScale2DToPoint(self, W,H,vec2d:Vector2D, sx:float, sy:float, Pvec2d:Vector2D = Vector2D(0,0)):
 
-        v = self.Translate2D(vec2d, Vector2D(*(-Pvec2d.x, -Pvec2d.y)))
+        v = self.Translate2D(vec2d, Vector2D(-Pvec2d.x, -Pvec2d.y))
 
         v = self.Scale2D(v, sx, sy)
 
@@ -131,7 +131,7 @@ class Matrix_Work():
     def ResScale2DArray(self, Array:list[Vector2D], sx:float, sy:float) -> list:
         return [self.ResScale2D(i, sx, sy) for i in Array]
 
-    def ResScale2DToPointArray(self, Array:list[Vector2D], sx:float, sy:float, Pvec2d:Vector2D = Vector2D(*(0,0))):
+    def ResScale2DToPointArray(self, Array:list[Vector2D], sx:float, sy:float, Pvec2d:Vector2D = Vector2D(0,0)):
         return [self.ResScale2DToPoint(i, sx, sy, Pvec2d) for i in Array]
 
     def Shear2D(self, vec2d:Vector2D, sx:float, sy:float):

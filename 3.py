@@ -1,8 +1,6 @@
-from xml.etree.ElementTree import PI
 from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtGui import QColor, QPainter, QPen
 
-import numpy as np
 import sys
 
 from My_Draw_2 import *
@@ -59,23 +57,18 @@ class Main_Window(QWidget, QPainter, DrawTool):
     def fullDraw(self,qp):
         pen = self.pen   
 
-        keys = list(self.FullImage.keys())
-        keys.sort(reverse=True)
-        All = []
+        for k in sorted(self.FullImage.keys()):
+            for i in self.FullImage[k]:
+                if isinstance(i, Image_2):
+                    for j in i.getArrayPixel():
+                        pen.setColor(j.color)
+                        qp.setPen(pen)
 
-        for k, v in self.FullImage.items():
-             for i in v:
-                 if isinstance(i, Image_2):
-                    All.extend(i.getArrayPixel())
+                        x = self.Center.x + j.x
+                        y = self.Center.y + j.y if not self.grafFlag else self.Center.y - j.y
 
-        for i in All:
-            pen.setColor(i.color)
-            qp.setPen(pen)
+                        qp.drawPoint(x,y)
 
-            x = self.Center.x + i.x
-            y = self.Center.y + i.y if not self.grafFlag else self.Center.y - i.y
-
-            qp.drawPoint(x,y)
 
     def putPixel(self, pixel:Pixel):
         self.FullImage[-1].append(pixel)
@@ -138,6 +131,10 @@ if __name__ == '__main__':
     Line.drawLine(Vector2D(-5, 10), Vector2D(5,10), QColor(255,0,0))
     wind.pushImage(Line)
 
+    My_Circle = Image_2('Circle', 10)
+    My_Circle.drawCircle(Vector2D(0, 0), 50)
+    wind.pushImage(My_Circle)
+
     MLine = Line.copy('Mirror',1)
     MLine.MirrorAxis(False, True)
     wind.pushImage(MLine)
@@ -150,49 +147,38 @@ if __name__ == '__main__':
     SLine.setColor(QColor(0,0,255))
     SLine.ScaleToPoint(10, 10)
 
-    # SLine.Translate(Vector2D(*(0,100)))
-    # SLine.Translate(Vector2D(*(0,0)))
+    # SLine.Translate(Vector2D(0,100))
+    # SLine.Translate(Vector2D(0,0))
 
-    # SLine.ScaleToPoint(10, 10, Vector2D(*(-15, 10)))
-    # SLine.ScaleToPoint(10, 10, Vector2D(*(0, 0)))
-
+    # SLine.ScaleToPoint(10, 10, Vector2D(-15, 10))
+    # SLine.ScaleToPoint(10, 10, Vector2D(0, 0))
     wind.pushImage(SLine)
 
     MLine = SLine.copy('Move',1)
     MLine.setColor(QColor(255,100,255))
-    MLine.Move(Vector2D(*(100, 100)))
-
+    MLine.Move(Vector2D(100, 100))
     wind.pushImage(MLine)
 
     MLine2 = MLine.copy('Move',1)
     MLine2.setColor(QColor(255,100,255))
-    MLine2.Move(Vector2D(*(-100, 100)))
-
+    MLine2.Move(Vector2D(-100, 100))
     wind.pushImage(MLine2)
 
     MLine3 = MLine.copy('Move',1)
     MLine3.setColor(QColor(255,100,255))
-    MLine3.Move(Vector2D(*(-100, -100)))
-
+    MLine3.Move(Vector2D(-100, -100))
     wind.pushImage(MLine3)
 
     MLine4 = MLine.copy('Move',1)
     MLine4.setColor(QColor(255,100,255))
-    MLine4.Move(Vector2D(*(100, -100)))
-
+    MLine4.Move(Vector2D(100, -100))
     wind.pushImage(MLine4)
 
 
     MLine5 = MLine.copy('Move',1)
     MLine5.setColor(QColor(255,100,255))
-    MLine5.Move(Vector2D(*(0, 0)))
-
+    MLine5.Move(Vector2D(0, 0))
     wind.pushImage(MLine5)
-
-
-
-
-    
 
     SLine3 = Line.copy('Scale3',3)
     SLine3.setColor(QColor(0,255,255))
@@ -216,9 +202,6 @@ if __name__ == '__main__':
     SRCLine2.MirrorAxis(True,True)
     SRCLine2.setColor(QColor(255,50,20))
     wind.pushImage(SRCLine2)
-
-
-
 
     # SSLine = SRCLine2.copy("SS", 5)
     # # SSLine = Image("SS", 5)

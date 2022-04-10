@@ -1,4 +1,6 @@
 from statistics import mean
+from tokenize import Double
+from turtle import circle
 from PyQt5.QtGui import QColor
 from sympy import Matrix
 from My_Vectors import *
@@ -26,7 +28,7 @@ class DrawTool():
         FlatArray = np.array(Array).reshape(-1)
         return [self.convertToPixel(i, color) for i in FlatArray]
 
-    def drawLine(self, vec0:Vector2D, vec1:Vector2D, color:QColor = None):
+    def drawLine(self, vec0:Vector2D, vec1:Vector2D, color:QColor = None) -> list[Pixel]:
         #Инкрементный алгоритм растеризации
         
         line = []
@@ -54,6 +56,43 @@ class DrawTool():
 
         return line
 
+    def drawCircle(self, vec2D:Vector2D, R:Double, color:QColor = None) -> list[Pixel]:
+
+        circ = []
+        
+        vec = Vector2D(0,R)
+        
+        delta = 1 - 2 * R
+        error = 0
+
+        while (vec.y >= vec.x):
+
+            circ.append(Pixel(Vector2D(vec2D.x + vec.x, vec2D.y + vec.y), color))
+            circ.append(Pixel(Vector2D(vec2D.x + vec.x, vec2D.y - vec.y), color))
+            circ.append(Pixel(Vector2D(vec2D.x - vec.x, vec2D.y + vec.y), color))
+            circ.append(Pixel(Vector2D(vec2D.x - vec.x, vec2D.y - vec.y), color))
+            circ.append(Pixel(Vector2D(vec2D.x + vec.y, vec2D.y + vec.x), color))
+            circ.append(Pixel(Vector2D(vec2D.x + vec.y, vec2D.y - vec.x), color))
+            circ.append(Pixel(Vector2D(vec2D.x - vec.y, vec2D.y + vec.x), color))
+            circ.append(Pixel(Vector2D(vec2D.x - vec.y, vec2D.y - vec.x), color))
+
+            error = 2 * (delta + vec.y) - 1
+            if ((delta < 0) and (error <= 0)):
+                vec.x += 1
+                delta += 2 * vec.x + 1
+                continue
+
+            if ((delta > 0) and (error > 0)):
+                vec.y -= 1
+                delta -= 2 * vec.y + 1
+                continue
+
+            vec.x +=1
+            delta += 2 * (vec.x - vec.y)
+            vec.y -= 1
+        
+        return circ
+
 
 
 class Image_2(DrawTool, Matrix_Work):
@@ -71,7 +110,7 @@ class Image_2(DrawTool, Matrix_Work):
         return self.PixelBuffer.get(x, {}).get(y, None)
 
     def getArrayPixel(self) -> list[Pixel]:
-        return [Pixel(Vector2D(*(i,j)), v) for i, value in self.PixelBuffer.items() for j,v in value.items()]
+        return [Pixel(Vector2D(i,j), v) for i, value in self.PixelBuffer.items() for j,v in value.items()]
 
     def setPixel(self, pixel:Pixel):
         x = pixel.x
@@ -100,8 +139,13 @@ class Image_2(DrawTool, Matrix_Work):
 
         return (max_x, min_x, max_y, min_y)
 
-    def drawLine(self, vec0:Vector2D, vec1:Vector2D, color:QColor = QColor(0,0,0)) -> list:
+    def drawLine(self, vec0:Vector2D, vec1:Vector2D, color:QColor = QColor(0,0,0)) -> list[Pixel]:
         SDraw = super().drawLine(vec0,vec1, color)
+        self.putArray(SDraw)
+        return SDraw
+
+    def drawCircle(self, vec2D: Vector2D, R: Double, color: QColor = QColor(0,0,0)) -> list[Pixel]:
+        SDraw = super().drawCircle(vec2D, R, color)
         self.putArray(SDraw)
         return SDraw
 
@@ -109,7 +153,7 @@ class Image_2(DrawTool, Matrix_Work):
             new_buffer = []
             for i, value in self.PixelBuffer.items():
                  for j,v in value.items():
-                     new_buffer.append(Pixel(super().Mirror2DAxis(Vector2D(*(i,j)), x, y), color = v))
+                     new_buffer.append(Pixel(super().Mirror2DAxis(Vector2D(i,j), x, y), color = v))
 
             self.PixelBuffer.clear()
             self.putArray(new_buffer)
@@ -118,7 +162,7 @@ class Image_2(DrawTool, Matrix_Work):
             new_buffer = []
             for i, value in self.PixelBuffer.items():
                 for j,v in value.items():
-                    new_buffer.append(Pixel(super().Rotation2DAlf(Vector2D(*(i,j)), alf), color = v))
+                    new_buffer.append(Pixel(super().Rotation2DAlf(Vector2D(i,j), alf), color = v))
 
             self.PixelBuffer.clear()
             self.putArray(new_buffer)
@@ -139,7 +183,7 @@ class Image_2(DrawTool, Matrix_Work):
 
         for i, value in self.PixelBuffer.items():
              for j,v in value.items():
-                 s = super().ResScale2D(self.ScaleWidth, self.ScaleHeight, Vector2D(*(i,j)), sx, sy)
+                 s = super().ResScale2D(self.ScaleWidth, self.ScaleHeight, Vector2D(i,j), sx, sy)
                  new_buffer.extend([Pixel(vec, color = v) for vec in s])
         
         self.PixelBuffer.clear()
@@ -150,7 +194,7 @@ class Image_2(DrawTool, Matrix_Work):
 
         if Pvec2d == None:
             result = self.recalculateSize()
-            Pvec2d = Vector2D(*( mean((result[0],result[1])), mean((result[2],result[3]))))
+            Pvec2d = Vector2D( mean((result[0],result[1])), mean((result[2],result[3])))
        
         self.ScaleHeight = round(sx * self.ScaleHeight) 
         self.ScaleWidth = round(sy * self.ScaleWidth)
@@ -159,7 +203,7 @@ class Image_2(DrawTool, Matrix_Work):
 
         for i, value in self.PixelBuffer.items():
              for j,v in value.items():
-                 s = super().ResScale2DToPoint(self.ScaleWidth, self.ScaleHeight, Vector2D(*(i,j)), sx, sy, Pvec2d)
+                 s = super().ResScale2DToPoint(self.ScaleWidth, self.ScaleHeight, Vector2D(i,j), sx, sy, Pvec2d)
                  new_buffer.extend([Pixel(vec, color = v) for vec in s])
         
         self.PixelBuffer.clear()
@@ -169,20 +213,20 @@ class Image_2(DrawTool, Matrix_Work):
         new_buffer = []
 
         center =self.recalculateSize()
-        center = Vector2D(*( mean((center[0],center[1])), mean((center[2],center[3]))))
+        center = Vector2D( mean((center[0],center[1])), mean((center[2],center[3])))
        
         for i, value in self.PixelBuffer.items():
             for j,v in value.items():
-                new_buffer.append(Pixel(super().Move2D(Vector2D(*(i,j)), Pvec2d, center), color = v))
+                new_buffer.append(Pixel(super().Move2D(Vector2D(i,j), Pvec2d, center), color = v))
 
         self.PixelBuffer.clear()
         self.putArray(new_buffer)
 
-    def Translate(self, Pvec2d:Vector2D = Vector2D(*(0,0))):
+    def Translate(self, Pvec2d:Vector2D = Vector2D(0,0)):
         new_buffer = []
         for i, value in self.PixelBuffer.items():
             for j,v in value.items():
-                new_buffer.append(Pixel(super().Translate2D(Vector2D(*(i,j)), Pvec2d), color = v))
+                new_buffer.append(Pixel(super().Translate2D(Vector2D(i,j), Pvec2d), color = v))
 
         self.PixelBuffer.clear()
         self.putArray(new_buffer)
@@ -191,7 +235,7 @@ class Image_2(DrawTool, Matrix_Work):
         new_buffer = []
         for i, value in self.PixelBuffer.items():
             for j,v in value.items():
-                new_buffer.append(Pixel(super().Shear2D(Vector2D(*(i,j)), sx, sy), color = v))
+                new_buffer.append(Pixel(super().Shear2D(Vector2D(i,j), sx, sy), color = v))
 
         self.PixelBuffer.clear()
         self.putArray(new_buffer)
