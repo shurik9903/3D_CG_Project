@@ -7,6 +7,11 @@ class Matrix_Work():
     def __init__(self) -> None:
         pass
 
+    def Projection(self, vec3d:Vector3D) -> Vector2D:
+
+
+        m = np.array([[1, 0, 0], [0, 1, 0]])
+
     def Mirror2DAxis(self, vec2d:Vector2D, x:bool = False, y:bool = False) -> Vector2D:
         x = -1 if x else 1
         y = -1 if y else 1
@@ -33,7 +38,9 @@ class Matrix_Work():
     def Rotation2DAlf(self, vec2d:Vector2D, alf = 0) -> Vector2D:
         alf = radians(alf)
         v = np.array([vec2d.x, vec2d.y])
+
         #m = np.array([[cos(alf), -sin(alf)],[sin(alf), cos(alf)]]) #Стандартный алгоритм вращения
+
         a = np.array([[1, -tan(alf/2)],[0, 1]])
         b = np.array([[1, 0],[sin(alf), 1]])
         c = np.array([[1, -tan(alf/2)],[0, 1]])
@@ -60,6 +67,7 @@ class Matrix_Work():
 
     def Rotation2DAlfArray(self, Array:list[Vector2D], alf = 0) -> list:
         return [self.Rotation2DAlf(i, alf) for i in Array]
+        
 
     def Rotation3DAlfArray(self, Array:list[Vector3D], alf = 0,  Axis:str = 'x') -> list:
         return [self.Rotation3DAlf(i, alf, Axis) for i in Array]
@@ -108,36 +116,62 @@ class Matrix_Work():
 
         return Vector3D(*s)
 
-    def Scale2DArray(self, Array:list[Vector2D], sx:float, sy:float) -> list:
+    def Scale2DArray(self, Array:list[Vector2D], sx:float, sy:float) -> list[Vector2D]:
         return [self.Scale2D(i, sx, sy) for i in Array]
 
-    def Scale3DArray(self, Array:list[Vector3D], sx:float, sy:float, sz:float) -> list:
+    def Scale3DArray(self, Array:list[Vector3D], sx:float, sy:float, sz:float) -> list[Vector2D]:
         return [self.Scale3D(i, sx, sy, sz) for i in Array]
 
-    def ResScale2D(self, W, H, vec2d:Vector2D, sx:float, sy:float) -> list:
+    def ResScale2D(self, W, H, vec2d:Vector2D, sx:float, sy:float) -> list[Vector2D]:
         s = self.Scale2D(vec2d, sx, sy)
-        return self.Resize2D(W, H, s)
+        return self.Resize2D(W, H, Vector2D(*s))
 
-    def ResScale2DToPoint(self, W,H,vec2d:Vector2D, sx:float, sy:float, Pvec2d:Vector2D = Vector2D(0,0)):
+    def ResScale2DToPoint(self, W, H, vec2d:Vector2D, sx:float, sy:float, Pvec2d:Vector2D = Vector2D(0,0)) -> list[Vector2D]:
 
-        v = self.Translate2D(vec2d, Vector2D(-Pvec2d.x, -Pvec2d.y))
+        v = np.array([vec2d.x, vec2d.y, 1])
 
-        v = self.Scale2D(v, sx, sy)
+        m1 = np.array([[1, 0, 0],[0, 1, 0],[-Pvec2d.x, -Pvec2d.y, 1]])
+        m2 = np.array([[sx, 0, 0],[0, sy, 0], [0,0,1]])
+        m3 = np.array([[1, 0, 0],[0, 1, 0],[Pvec2d.x, Pvec2d.y, 1]])
 
-        v = self.Translate2D(v, Pvec2d)
+        m = m1.dot(m2.dot(m3))
 
-        return self.Resize2D(W, H, v)
+        v = v.dot(m)
 
-    def ResScale2DArray(self, Array:list[Vector2D], sx:float, sy:float) -> list:
-        return [self.ResScale2D(i, sx, sy) for i in Array]
+        # v = self.Translate2D(vec2d, Vector2D(-Pvec2d.x, -Pvec2d.y))
 
-    def ResScale2DToPointArray(self, Array:list[Vector2D], sx:float, sy:float, Pvec2d:Vector2D = Vector2D(0,0)):
-        return [self.ResScale2DToPoint(i, sx, sy, Pvec2d) for i in Array]
+        # v = self.Scale2D(v, sx, sy)
 
-    def Shear2D(self, vec2d:Vector2D, sx:float, sy:float):
+        # v = self.Translate2D(v, Pvec2d)
+
+        return self.Resize2D(W, H, Vector2D(*v))
+
+    def ResScale2DArray(self, W, H, Array:list[Vector2D], sx:float, sy:float) -> list:
+        return [self.ResScale2D(W, H, i, sx, sy) for i in Array]
+
+    def ResScale2DToPointArray(self, W, H, Array:list[Vector2D], sx:float, sy:float, Pvec2d:Vector2D = Vector2D(0,0)) -> list[Vector2D]:
+
+        m1 = np.array([[1, 0, 0],[0, 1, 0],[-Pvec2d.x, -Pvec2d.y, 1]])
+        m2 = np.array([[sx, 0, 0],[0, sy, 0], [0,0,1]])
+        m3 = np.array([[1, 0, 0],[0, 1, 0],[Pvec2d.x, Pvec2d.y, 1]])
+
+        m = m1.dot(m2.dot(m3))
+
+        All = []
+
+        for i in Array:
+            v = np.array([i.x, i.y, 1])
+            v = v.dot(m)
+            All.append(self.Resize2D(W, H, Vector2D(*v)))
+            
+        return All
+
+        # return [self.ResScale2DToPoint(W, H, i, sx, sy, Pvec2d) for i in Array]
+
+    def Shear2D(self, vec2d:Vector2D, sx:float, sy:float) -> Vector2D:
         v = np.array([vec2d.x, vec2d.y])
         m = np.array([[1, sx],[sy, 1]])
         return Vector2D(*np.around(v.dot(m)).astype(int))
 
-    def Shear2DArray(self, Array:list[Vector2D], sx:float, sy:float):
+    def Shear2DArray(self, Array:list[Vector2D], sx:float, sy:float) -> list[Vector2D]:
         return [self.Shear2D(i, sx, sy) for i in Array]

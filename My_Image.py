@@ -1,101 +1,6 @@
-from statistics import mean
-from tokenize import Double
-from turtle import circle
-from PyQt5.QtGui import QColor
-from sympy import Matrix
-from My_Vectors import *
-from My_Matrix import Matrix_Work
+from My_Draw import *
 
-from copy import deepcopy
-
-
-
-import numpy as np
-
-class Pixel(Vector2D):
-    def __init__(self, vec2d:Vector2D, color = None):
-        super().__init__(vec2d.x, vec2d.y)
-        self.color = QColor(0,0,0) if color == None else color
-
-class DrawTool():
-    def __init__(self) -> None:
-        pass
-
-    def convertToPixel(self, vec2d:Vector2D, color:QColor = QColor(0,0,0)):
-        return Pixel(vec2d, color)
-
-    def convertToArrayPixels(self, Array:Vector2D, color:QColor = QColor(0,0,0)):
-        FlatArray = np.array(Array).reshape(-1)
-        return [self.convertToPixel(i, color) for i in FlatArray]
-
-    def drawLine(self, vec0:Vector2D, vec1:Vector2D, color:QColor = None) -> list[Pixel]:
-        #Инкрементный алгоритм растеризации
-        
-        line = []
-
-        dx = abs(vec1.x - vec0.x)
-        sx =  1 if vec0.x < vec1.x else -1
-        dy = -abs(vec1.y - vec0.y)
-        sy =  1 if vec0.y < vec1.y else -1
-        error = dx + dy
-        
-        while True:
-            line.append(Pixel(vec0, color))
-            if vec0.x == vec1.x and vec0.y == vec1.y: break
-            e2 = 2 * error
-
-            if e2 >= dy:
-                if vec0.x == vec1.x: break
-                error = error + dy
-                vec0.x = vec0.x + sx
-            
-            if e2 <= dx:
-                if vec0.y == vec1.y: break
-                error = error + dx
-                vec0.y = vec0.y + sy
-
-        return line
-
-    def drawCircle(self, vec2D:Vector2D, R:Double, color:QColor = None) -> list[Pixel]:
-
-        circ = []
-        
-        vec = Vector2D(0,R)
-        
-        delta = 1 - 2 * R
-        error = 0
-
-        while (vec.y >= vec.x):
-
-            circ.append(Pixel(Vector2D(vec2D.x + vec.x, vec2D.y + vec.y), color))
-            circ.append(Pixel(Vector2D(vec2D.x + vec.x, vec2D.y - vec.y), color))
-            circ.append(Pixel(Vector2D(vec2D.x - vec.x, vec2D.y + vec.y), color))
-            circ.append(Pixel(Vector2D(vec2D.x - vec.x, vec2D.y - vec.y), color))
-            circ.append(Pixel(Vector2D(vec2D.x + vec.y, vec2D.y + vec.x), color))
-            circ.append(Pixel(Vector2D(vec2D.x + vec.y, vec2D.y - vec.x), color))
-            circ.append(Pixel(Vector2D(vec2D.x - vec.y, vec2D.y + vec.x), color))
-            circ.append(Pixel(Vector2D(vec2D.x - vec.y, vec2D.y - vec.x), color))
-
-            error = 2 * (delta + vec.y) - 1
-            if ((delta < 0) and (error <= 0)):
-                vec.x += 1
-                delta += 2 * vec.x + 1
-                continue
-
-            if ((delta > 0) and (error > 0)):
-                vec.y -= 1
-                delta -= 2 * vec.y + 1
-                continue
-
-            vec.x +=1
-            delta += 2 * (vec.x - vec.y)
-            vec.y -= 1
-        
-        return circ
-
-
-
-class Image_2(DrawTool, Matrix_Work):
+class Image(DrawTool, Matrix_Work):
     def __init__(self, Name:str = "", Layer:int = 0):
         self.Name = Name
         self.Layer = Layer
@@ -106,7 +11,6 @@ class Image_2(DrawTool, Matrix_Work):
         self.PixelBuffer = {}
 
     def getPixel(self, x:int, y:int) -> Pixel:
-        
         return self.PixelBuffer.get(x, {}).get(y, None)
 
     def getArrayPixel(self) -> list[Pixel]:
@@ -126,6 +30,7 @@ class Image_2(DrawTool, Matrix_Work):
         return self.getPixel(x, y)
 
     def recalculateSize(self) -> tuple:
+
         min_x, max_x = min(self.PixelBuffer), max(self.PixelBuffer)
         first = next(iter(list(self.PixelBuffer.values())[0]))
         min_y, max_y = first, first
@@ -146,6 +51,11 @@ class Image_2(DrawTool, Matrix_Work):
 
     def drawCircle(self, vec2D: Vector2D, R: Double, color: QColor = QColor(0,0,0)) -> list[Pixel]:
         SDraw = super().drawCircle(vec2D, R, color)
+        self.putArray(SDraw)
+        return SDraw
+
+    def draw3DBox(self, center: Vector2D, size: int, color: QColor = QColor(0, 0, 0)) -> list[Pixel]:
+        SDraw = super().draw3DBox(center, size, color)
         self.putArray(SDraw)
         return SDraw
 
@@ -201,10 +111,22 @@ class Image_2(DrawTool, Matrix_Work):
 
         new_buffer = []
 
+        m1 = np.array([[1, 0, 0],[0, 1, 0],[-Pvec2d.x, -Pvec2d.y, 1]])
+        m2 = np.array([[sx, 0, 0],[0, sy, 0], [0,0,1]])
+        m3 = np.array([[1, 0, 0],[0, 1, 0],[Pvec2d.x, Pvec2d.y, 1]])
+
+        m = m1.dot(m2.dot(m3))
+
+        All = []
+
         for i, value in self.PixelBuffer.items():
              for j,v in value.items():
-                 s = super().ResScale2DToPoint(self.ScaleWidth, self.ScaleHeight, Vector2D(i,j), sx, sy, Pvec2d)
-                 new_buffer.extend([Pixel(vec, color = v) for vec in s])
+                vv = np.array([i, j, 1])
+                vv = vv.dot(m)
+                All = self.Resize2D(self.ScaleWidth, self.ScaleHeight, Vector2D(*vv))
+
+                # s = super().ResScale2DToPoint(self.ScaleWidth, self.ScaleHeight, Vector2D(i,j), sx, sy, Pvec2d)
+                new_buffer.extend([Pixel(vec, color = v) for vec in All])
         
         self.PixelBuffer.clear()
         self.putArray(new_buffer)
@@ -212,7 +134,7 @@ class Image_2(DrawTool, Matrix_Work):
     def Move(self, Pvec2d:Vector2D):
         new_buffer = []
 
-        center =self.recalculateSize()
+        center = self.recalculateSize()
         center = Vector2D( mean((center[0],center[1])), mean((center[2],center[3])))
        
         for i, value in self.PixelBuffer.items():
@@ -255,11 +177,8 @@ class Image_2(DrawTool, Matrix_Work):
     #     self.PixelBuffer.clear()
     #     self.PixelBuffer = retimg
 
-
-
-
     def copy(self, Name:str = None, Layer:int = None): #Копия
-        new_cls = Image_2(self.Name if Name == None else Name, \
+        new_cls = Image(self.Name if Name == None else Name, \
         self.Layer if Layer == None else Layer)
         new_cls.ScaleWidth = self.ScaleWidth
         new_cls.ScaleHeight = self.ScaleHeight
@@ -267,4 +186,3 @@ class Image_2(DrawTool, Matrix_Work):
         new_cls.Height = self.Height
         new_cls.PixelBuffer = deepcopy(self.PixelBuffer)
         return new_cls
-

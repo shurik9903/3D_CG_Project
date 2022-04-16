@@ -3,7 +3,8 @@ from PyQt5.QtGui import QColor, QPainter, QPen
 
 import sys
 
-from My_Draw_2 import *
+from My_Image import *
+from My_Image3D import *
 from My_Matrix import *
 from My_Vectors import *
 
@@ -24,7 +25,7 @@ class Main_Window(QWidget, QPainter, DrawTool):
         self.resize(SizeX,SizeY) #Выставление размера окна
         self.setFixedSize(SizeX, SizeY) #Выставление фиксированого размера окна
 
-    def pushImage(self, PImage:Image_2):
+    def pushImage(self, PImage:Image):
         if not self.FullImage.get(PImage.Layer) == None:
             self.FullImage.get(PImage.Layer).append(PImage)
         else:
@@ -59,7 +60,7 @@ class Main_Window(QWidget, QPainter, DrawTool):
 
         for k in sorted(self.FullImage.keys()):
             for i in self.FullImage[k]:
-                if isinstance(i, Image_2):
+                if isinstance(i, Image):
                     for j in i.getArrayPixel():
                         pen.setColor(j.color)
                         qp.setPen(pen)
@@ -96,7 +97,7 @@ def drawAxis(valueOfDivision):
     WWidth = wind.size().width()
     WHight = wind.size().height() 
 
-    Axis = Image_2("Axis", 0)
+    Axis = Image("Axis", 0)
 
     for i in range(-round(WWidth/2), round(WWidth/2), valueOfDivision):
         Axis.drawLine(Vector2D(i,round(valueOfDivision/5)), Vector2D(i,round(-valueOfDivision/5)))
@@ -127,81 +128,85 @@ if __name__ == '__main__':
 
     wind.pushImage(drawAxis(10))
 
-    Line = Image_2('Line',1)
-    Line.drawLine(Vector2D(-5, 10), Vector2D(5,10), QColor(255,0,0))
-    wind.pushImage(Line)
+    Box = Image3D('Box', 1)
+    Box.draw3DBox(Vector2D(0,0), 50)
+    
+    wind.pushImage(Box)
 
-    My_Circle = Image_2('Circle', 10)
-    My_Circle.drawCircle(Vector2D(0, 0), 50)
-    wind.pushImage(My_Circle)
+    # Line = Image('Line',1)
+    # Line.drawLine(Vector2D(-5, 10), Vector2D(5,10), QColor(255,0,0))
+    # wind.pushImage(Line)
 
-    MLine = Line.copy('Mirror',1)
-    MLine.MirrorAxis(False, True)
-    wind.pushImage(MLine)
+    # My_Circle = Image('Circle', 10)
+    # My_Circle.drawCircle(Vector2D(0, 0), 50)
+    # wind.pushImage(My_Circle)
 
-    RLine = Line.copy('Rotation',1)
-    RLine.RotationAlf(45)
-    wind.pushImage(RLine)
+    # MLine = Line.copy('Mirror',1)
+    # MLine.MirrorAxis(False, True)
+    # wind.pushImage(MLine)
 
-    SLine = Line.copy('Scale',-1)
-    SLine.setColor(QColor(0,0,255))
-    SLine.ScaleToPoint(10, 10)
+    # RLine = Line.copy('Rotation',1)
+    # RLine.RotationAlf(45)
+    # wind.pushImage(RLine)
 
-    # SLine.Translate(Vector2D(0,100))
-    # SLine.Translate(Vector2D(0,0))
+    # SLine = Line.copy('Scale',-1)
+    # SLine.setColor(QColor(0,0,255))
+    # SLine.ScaleToPoint(10, 10)
 
-    # SLine.ScaleToPoint(10, 10, Vector2D(-15, 10))
-    # SLine.ScaleToPoint(10, 10, Vector2D(0, 0))
-    wind.pushImage(SLine)
+    # # SLine.Translate(Vector2D(0,100))
+    # # SLine.Translate(Vector2D(0,0))
 
-    MLine = SLine.copy('Move',1)
-    MLine.setColor(QColor(255,100,255))
-    MLine.Move(Vector2D(100, 100))
-    wind.pushImage(MLine)
+    # # SLine.ScaleToPoint(10, 10, Vector2D(-15, 10))
+    # # SLine.ScaleToPoint(10, 10, Vector2D(0, 0))
+    # wind.pushImage(SLine)
 
-    MLine2 = MLine.copy('Move',1)
-    MLine2.setColor(QColor(255,100,255))
-    MLine2.Move(Vector2D(-100, 100))
-    wind.pushImage(MLine2)
+    # MLine = SLine.copy('Move',1)
+    # MLine.setColor(QColor(255,100,255))
+    # MLine.Move(Vector2D(100, 100))
+    # wind.pushImage(MLine)
 
-    MLine3 = MLine.copy('Move',1)
-    MLine3.setColor(QColor(255,100,255))
-    MLine3.Move(Vector2D(-100, -100))
-    wind.pushImage(MLine3)
+    # MLine2 = MLine.copy('Move',1)
+    # MLine2.setColor(QColor(255,100,255))
+    # MLine2.Move(Vector2D(-100, 100))
+    # wind.pushImage(MLine2)
 
-    MLine4 = MLine.copy('Move',1)
-    MLine4.setColor(QColor(255,100,255))
-    MLine4.Move(Vector2D(100, -100))
-    wind.pushImage(MLine4)
+    # MLine3 = MLine.copy('Move',1)
+    # MLine3.setColor(QColor(255,100,255))
+    # MLine3.Move(Vector2D(-100, -100))
+    # wind.pushImage(MLine3)
 
-
-    MLine5 = MLine.copy('Move',1)
-    MLine5.setColor(QColor(255,100,255))
-    MLine5.Move(Vector2D(0, 0))
-    wind.pushImage(MLine5)
-
-    SLine3 = Line.copy('Scale3',3)
-    SLine3.setColor(QColor(0,255,255))
-    SLine3.Scale(-10, -10)
-    SLine3.Shear(2,0)
-    wind.pushImage(SLine3)
+    # MLine4 = MLine.copy('Move',1)
+    # MLine4.setColor(QColor(255,100,255))
+    # MLine4.Move(Vector2D(100, -100))
+    # wind.pushImage(MLine4)
 
 
-    SLine2 = SLine.copy(Layer=3)
-    SLine2.Scale(2,2)
-    SLine2.setColor(QColor(0,255,0))
-    wind.pushImage(SLine2)
+    # MLine5 = MLine.copy('Move',1)
+    # MLine5.setColor(QColor(255,100,255))
+    # MLine5.Move(Vector2D(0, 0))
+    # wind.pushImage(MLine5)
 
-    SRCLine = Line.copy("SRC", 4)
-    SRCLine.Scale(20, 20)
-    SRCLine.RotationAlf(45)
-    SRCLine.setColor(QColor(255,0,255))
-    wind.pushImage(SRCLine)
+    # SLine3 = Line.copy('Scale3',3)
+    # SLine3.setColor(QColor(0,255,255))
+    # SLine3.Scale(-10, -10)
+    # SLine3.Shear(2,0)
+    # wind.pushImage(SLine3)
 
-    SRCLine2 = SRCLine.copy("SRC2", 4)
-    SRCLine2.MirrorAxis(True,True)
-    SRCLine2.setColor(QColor(255,50,20))
-    wind.pushImage(SRCLine2)
+    # SLine2 = SLine.copy(Layer=3)
+    # SLine2.Scale(2,2)
+    # SLine2.setColor(QColor(0,255,0))
+    # wind.pushImage(SLine2)
+
+    # SRCLine = Line.copy("SRC", 4)
+    # SRCLine.Scale(20, 20)
+    # SRCLine.RotationAlf(45)
+    # SRCLine.setColor(QColor(255,0,255))
+    # wind.pushImage(SRCLine)
+
+    # SRCLine2 = SRCLine.copy("SRC2", 4)
+    # SRCLine2.MirrorAxis(True,True)
+    # SRCLine2.setColor(QColor(255,50,20))
+    # wind.pushImage(SRCLine2)
 
     # SSLine = SRCLine2.copy("SS", 5)
     # # SSLine = Image("SS", 5)
@@ -212,7 +217,7 @@ if __name__ == '__main__':
     # wind.pushImage(SSLine)
 
 
-    # wind.pushAllImage([Line, MLine, RLine, SLine, SLine2, SRCLine, SRCLine2, SSLine]) 
+    # # wind.pushAllImage([Line, MLine, RLine, SLine, SLine2, SRCLine, SRCLine2, SSLine]) 
 
     wind.show() #Вывод окна приложения на экран
     sys.exit(app.exec_()) #Процесс завершения работы
