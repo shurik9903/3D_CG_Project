@@ -7,10 +7,12 @@ class Matrix_Work():
     def __init__(self) -> None:
         pass
 
-    def Projection(self, vec3d:Vector3D) -> Vector2D:
-
-
+    def Projection2D(self, vec3d:Vector3D) -> Vector2D:
+        v = np.array([vec3d.x, vec3d.y, vec3d.z])
         m = np.array([[1, 0, 0], [0, 1, 0]])
+        v = np.round(m.dot(v))
+        
+        return Vector2D(*v)
 
     def Mirror2DAxis(self, vec2d:Vector2D, x:bool = False, y:bool = False) -> Vector2D:
         x = -1 if x else 1
@@ -58,14 +60,14 @@ class Matrix_Work():
 
         if Axis == 'x':
             m = np.array([[1, 0, 0],[0, cos(alf), -sin(alf)], [0, sin(alf),  cos(alf)]])
-        elif Axis == 'y':
-            m = np.array([[cos(alf), 0, sin(alf)],[0, 1, 0], [-sin(alf), 0,  cos(alf)]])
-        else:
-            m = np.array([[cos(alf), -sin(alf), 0],[sin(alf), cos(alf), 0], [0, 0,  1]])
+        if Axis == 'y':
+            m = np.array([[cos(alf), 0, -sin(alf)],[0, 1, 0], [sin(alf), 0,  cos(alf)]])
+        if Axis == 'z':
+            m = np.array([[cos(alf), -sin(alf), 0],[sin(alf), cos(alf), 0], [0, 0, 1]])
         
         return Vector3D(*np.around(v.dot(m)).astype(int))
 
-    def Rotation2DAlfArray(self, Array:list[Vector2D], alf = 0) -> list:
+    def Rotation2DAlfArray(self, Array:list[Vector3D], alf = 0) -> list[Vector3D]:
         return [self.Rotation2DAlf(i, alf) for i in Array]
         
 

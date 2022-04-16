@@ -180,9 +180,12 @@ class Image(DrawTool, Matrix_Work):
     def copy(self, Name:str = None, Layer:int = None): #Копия
         new_cls = Image(self.Name if Name == None else Name, \
         self.Layer if Layer == None else Layer)
+
         new_cls.ScaleWidth = self.ScaleWidth
         new_cls.ScaleHeight = self.ScaleHeight
+
         new_cls.Width = self.Width
         new_cls.Height = self.Height
+        
         new_cls.PixelBuffer = deepcopy(self.PixelBuffer)
         return new_cls
