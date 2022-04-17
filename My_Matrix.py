@@ -1,3 +1,4 @@
+from turtle import distance
 from My_Vectors import *
 from math import cos, radians, sin, tan
 
@@ -7,10 +8,16 @@ class Matrix_Work():
     def __init__(self) -> None:
         pass
 
-    def Projection2D(self, vec3d:Vector3D) -> Vector2D:
+    def Projection2D(self, vec3d:Vector3D, view:str = 'proj') -> Vector2D:
+        z = 1
+        distance = 140
+
+        if view == 'orto':
+            z = 1 / (distance - vec3d.z) if (distance - vec3d.z) else 0
+
         v = np.array([vec3d.x, vec3d.y, vec3d.z])
-        m = np.array([[1, 0, 0], [0, 1, 0]])
-        v = np.round(m.dot(v))
+        m = np.array([[z, 0, 0], [0, z, 0]])
+        v = m.dot(v)
         
         return Vector2D(*v)
 
@@ -47,9 +54,9 @@ class Matrix_Work():
         b = np.array([[1, 0],[sin(alf), 1]])
         c = np.array([[1, -tan(alf/2)],[0, 1]])
 
-        v = np.around(v.dot(a))
-        v = np.around(v.dot(b))
-        v = np.around(v.dot(c))
+        v = v.dot(a)
+        v = v.dot(b)
+        v = v.dot(c)
 
         return Vector2D(*(v.astype(int)))
         
@@ -59,13 +66,19 @@ class Matrix_Work():
         v = np.array([vec3d.x, vec3d.y, vec3d.z])
 
         if Axis == 'x':
-            m = np.array([[1, 0, 0],[0, cos(alf), -sin(alf)], [0, sin(alf),  cos(alf)]])
+            m = np.array([[1, 0, 0],
+                          [0, cos(alf), -sin(alf)], 
+                          [0, sin(alf),  cos(alf)]])
         if Axis == 'y':
-            m = np.array([[cos(alf), 0, -sin(alf)],[0, 1, 0], [sin(alf), 0,  cos(alf)]])
+            m = np.array([[cos(alf), 0, sin(alf)],
+                          [0, 1, 0], 
+                          [-sin(alf), 0,  cos(alf)]])
         if Axis == 'z':
-            m = np.array([[cos(alf), -sin(alf), 0],[sin(alf), cos(alf), 0], [0, 0, 1]])
+            m = np.array([[cos(alf), -sin(alf), 0],
+                          [sin(alf), cos(alf), 0], 
+                          [0, 0, 1]])
         
-        return Vector3D(*np.around(v.dot(m)).astype(int))
+        return Vector3D(*v.dot(m))
 
     def Rotation2DAlfArray(self, Array:list[Vector3D], alf = 0) -> list[Vector3D]:
         return [self.Rotation2DAlf(i, alf) for i in Array]
@@ -87,13 +100,13 @@ class Matrix_Work():
         v = np.array([vec2d.x, vec2d.y, 1]) 
         m = np.array([[1, 0, 0],[0, 1, 0],[Pvec2d.x, Pvec2d.y, 1]])
         v = v.dot(m)
-        return Vector2D(*np.around(v).astype(int))
+        return Vector2D(*v)
 
     def Translate3D(self, vec3d:Vector3D, Pvec3d:Vector3D) -> Vector3D:
         v = np.array([vec3d.x, vec3d.y, vec3d.z]) 
         m = np.array([[1, 0, 0, 0],[0, 1, 0, 0], [0, 0, 1, 0],[Pvec3d.x, Pvec3d.y, Pvec3d.z, 1]])
         v = v.dot(m)
-        return Vector3D(*np.around(v).astype(int))
+        return Vector3D(*v)
 
     def Translate2DArray(self, Array:list[Vector2D], Pvec2d:Vector2D) -> list:
         return [self.Translate2D(i, Pvec2d) for i in Array]
@@ -107,14 +120,14 @@ class Matrix_Work():
     def Scale2D(self, vec2d:Vector2D, sx:float, sy:float) -> Vector2D:
         v = np.array([vec2d.x, vec2d.y])
         m = np.array([[sx, 0],[0, sy]])
-        s = np.around(v.dot(m)).astype(int)
+        s = v.dot(m)
 
         return Vector2D(*s)
 
     def Scale3D(self, vec3d:Vector2D, sx:float, sy:float, sz:float) -> Vector3D:
         v = np.array([vec3d.x, vec3d.y, vec3d.z])
         m = np.array([[sx, 0, 0],[0, sy, 0], [0, 0, sz]])
-        s = np.around(v.dot(m)).astype(int)
+        s = v.dot(m)
 
         return Vector3D(*s)
 
@@ -173,7 +186,7 @@ class Matrix_Work():
     def Shear2D(self, vec2d:Vector2D, sx:float, sy:float) -> Vector2D:
         v = np.array([vec2d.x, vec2d.y])
         m = np.array([[1, sx],[sy, 1]])
-        return Vector2D(*np.around(v.dot(m)).astype(int))
+        return Vector2D(*v.dot(m))
 
     def Shear2DArray(self, Array:list[Vector2D], sx:float, sy:float) -> list[Vector2D]:
         return [self.Shear2D(i, sx, sy) for i in Array]

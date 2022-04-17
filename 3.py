@@ -30,6 +30,8 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     wind = Main_Window() #Создание и инициализация окна приложения
     tools = DrawTool() 
+    wind.view = 'orto'
+
     wind.show() #Вывод окна приложения на экран
 
     wind.pen.setWidth(1) #Установка размера пера в пикселях
@@ -49,21 +51,23 @@ if __name__ == '__main__':
     
     Box.draw3DBox(Vector3D(0,0,0), 100)
 
-    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Rotation', (1,'x'))
-    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Rotation', (1,'y'))
-    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Rotation', (1,'z'))
+    wind.Thread.addEvent(Box.Rotation3DAlf, 'Rotation', (1,'x'))
+    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Rotation2', (1,'y'))
+    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Rotation3', (1,'z'))
 
-    Box.Rotation3DAlf(1, 'z')
-    Box.Rotation3DAlf(1, 'z')
-    Box.Rotation3DAlf(1, 'z')
-    Box.Rotation3DAlf(1, 'z')
-    Box.Rotation3DAlf(1, 'z')
-    Box.Rotation3DAlf(1, 'z')
-    Box.Rotation3DAlf(1, 'z')
-    Box.Rotation3DAlf(1, 'z')
-    Box.Rotation3DAlf(1, 'z')
-    Box.Rotation3DAlf(1, 'z')
-    Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(45, 'y')
+    # Box.Rotation3DAlf(45, 'z')
+    # Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(1, 'z')
+    # Box.Rotation3DAlf(1, 'z')
     
     # Box.Rotation3DAlf(1, 'x')
     # Box.Rotation3DAlf(1, 'x')

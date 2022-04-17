@@ -11,31 +11,30 @@ from My_Matrix import *
 from My_Vectors import *
 
 
-# class DrawThread(QThread):
+class DrawThread(QThread):
 
-#     update = pyqtSignal(int)
-#     event_list = {}
+    update = pyqtSignal(int)
+    event_list = {}
 
-#     stop = False
+    stop = False
 
-#     def addEvent(self, event, event_name, value = None):
-#         self.event_list[event_name] = {'event':event, 'value':value}
+    def addEvent(self, event, event_name, value = None):
+        self.event_list[event_name] = {'event':event, 'value':value}
 
-#     def run(self):
-#         tick = 0
-#         while tick <= 100 and not self.stop:
+    def run(self):
+        tick = 0
+        while tick <= 360 and not self.stop:
 
-
-#             for k,v in self.event_list.items():
-#                 if v['value'] == None:
-#                     v['event']()
-#                 else:
-#                     v['event'](*v['value'])
+            for k,v in self.event_list.items():
+                if v['value'] == None:
+                    v['event']()
+                else:
+                    v['event'](*v['value'])
             
-#             tick += 1
-#             print(tick)
-#             time.sleep(0.5)
-#             self.update.emit(int)
+            tick += 1
+            print(tick)
+            time.sleep(0.1)
+            self.update.emit(int)
 
 
 class Main_Window(QWidget, QPainter, DrawTool):
@@ -52,10 +51,11 @@ class Main_Window(QWidget, QPainter, DrawTool):
         self.Center = Vector2D(0,0) #Точка начала координат
         self.grafFlag = False #ИСпользовать ли систему координат в виде графика
         
-        # self.Thread = DrawThread()
-        # self.Thread.addEvent(self.update, 'wind_update')
-        # self.Thread.start()
+        self.Thread = DrawThread()
+        self.Thread.addEvent(self.update, 'wind_update')
+        self.Thread.start()
         
+        self.view = 'proj'
 
 
     def setupUI(self, SizeX, SizeY):
@@ -106,8 +106,8 @@ class Main_Window(QWidget, QPainter, DrawTool):
                         pen.setColor(j.color)
                         qp.setPen(pen)
 
-                        x = self.Center.x + j.x
-                        y = self.Center.y + j.y if not self.grafFlag else self.Center.y - j.y
+                        x = round(self.Center.x + j.x)
+                        y = round(self.Center.y + j.y) if not self.grafFlag else round(self.Center.y - j.y)
 
                         qp.drawPoint(x,y)
 
@@ -116,12 +116,10 @@ class Main_Window(QWidget, QPainter, DrawTool):
                         pen.setColor(j.color)
                         qp.setPen(pen)
 
-                        
+                        d2 = Matrix_Work().Projection2D(Vector3D(j.x, j.y, j.z), self.view)
 
-                        d2 = Matrix_Work().Projection2D(Vector3D(j.x, j.y, j.z))
-
-                        x = self.Center.x + d2.x
-                        y = self.Center.y + d2.y if not self.grafFlag else self.Center.y - d2.y
+                        x = round(self.Center.x + d2.x)
+                        y = round(self.Center.y + d2.y) if not self.grafFlag else round(self.Center.y - d2.y)
 
                         qp.drawPoint(x,y)
 
