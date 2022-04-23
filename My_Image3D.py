@@ -4,12 +4,17 @@ class Image3D(DrawTool, Matrix_Work):
     def __init__(self, Name:str = "", Layer:int = 0):
         self.Name = Name
         self.Layer = Layer
+        
         self.ScaleWidth = 1
         self.ScaleHeight = 1
         self.ScaleDepth = 1
+
         self.Width = None
         self.Height = None
         self.Depth = None
+
+        self.Origin = None
+
         self.PixelBuffer = {}
 
     def getPixel(self, x:int, y:int, z:int) -> Pixel3D:
@@ -63,19 +68,23 @@ class Image3D(DrawTool, Matrix_Work):
         return SDraw
 
     def draw3DBox(self, center: Vector3D, size: int, color: QColor = QColor(0,0,0)) -> list[Pixel]:
+        self.Origin = center
         SDraw = super().draw3DBox(center, size, color)
         self.putArray(SDraw)
         return SDraw
 
-    def Rotation3DAlf(self, alf=0, Axis: str = 'x') :
+    def Rotation3DAlf(self, alf=0, Axis: str = 'x', origin:Vector3D = None) :
         # return super().Rotation3DAlf(vec3d, alf, Axis)
+
+        if origin is None:
+            origin = self.Origin
 
         new_buffer = []
 
         for i, v1 in self.PixelBuffer.items():
             for j,v2 in v1.items():
                 for l, v3 in v2.items():
-                    new_buffer.append(Pixel3D(super().Rotation3DAlf(Vector3D(i, j, l), alf, Axis), color = v3))
+                    new_buffer.append(Pixel3D(super().Rotation3DAlf(Vector3D(i, j, l), alf, Axis, origin), color = v3))
 
         self.PixelBuffer.clear()
         self.putArray(new_buffer)

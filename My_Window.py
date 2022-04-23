@@ -1,3 +1,4 @@
+from cmath import pi
 from multiprocessing import Event
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QColor, QPainter, QPen
@@ -17,20 +18,35 @@ class DrawThread(QThread):
     event_list = {}
 
     stop = False
+    pause = True
+    work = False
 
-    def addEvent(self, event, event_name, value = None):
-        self.event_list[event_name] = {'event':event, 'value':value}
+    def addEvent(self, event, event_name, value = None, queue = 1):
+        while self.work:
+            True
+
+        self.pause = True
+        self.event_list[event_name] = {'event':event, 'value':value, 'queue':queue}
+        self.event_list = dict(sorted(self.event_list.items(), key = lambda item: item[1]['queue']))
+        self.pause = False
 
     def run(self):
         tick = 0
         while tick <= 360 and not self.stop:
+        
+            if self.pause:
+                continue
+
+            self.work = True
 
             for k,v in self.event_list.items():
                 if v['value'] == None:
                     v['event']()
                 else:
                     v['event'](*v['value'])
-            
+
+            self.work = False
+
             tick += 1
             print(tick)
             time.sleep(0.1)
@@ -41,6 +57,11 @@ class Main_Window(QWidget, QPainter, DrawTool):
     
     def __init__(self, SizeX = 500, SizeY = 500):
         super().__init__()
+
+        self.FOV = 45
+        self.Z0 = None
+
+        self.view = 'proj'
         
         self.setupUI(SizeX, SizeY) #Инициализация окна
         self.FullImage = {-1:[]} #Буффер изображений
@@ -52,17 +73,17 @@ class Main_Window(QWidget, QPainter, DrawTool):
         self.grafFlag = False #ИСпользовать ли систему координат в виде графика
         
         self.Thread = DrawThread()
-        self.Thread.addEvent(self.update, 'wind_update')
+        self.Thread.addEvent(self.update, 'wind_update', queue=-1)
         self.Thread.start()
         
-        self.view = 'proj'
-
 
     def setupUI(self, SizeX, SizeY):
         self.setWindowTitle("CG")
         self.move(300,300) #Стартовое расположение окна на экране
         self.resize(SizeX,SizeY) #Выставление размера окна
         self.setFixedSize(SizeX, SizeY) #Выставление фиксированого размера окна
+
+        self.Z0 = (self.width() / 2) / tan((self.FOV / 2) * pi / 180)
 
     def pushImage(self, PImage:Image):
         if not self.FullImage.get(PImage.Layer) == None:
@@ -116,7 +137,7 @@ class Main_Window(QWidget, QPainter, DrawTool):
                         pen.setColor(j.color)
                         qp.setPen(pen)
 
-                        d2 = Matrix_Work().Projection2D(Vector3D(j.x, j.y, j.z), self.view)
+                        d2 = Matrix_Work().Projection2D(Vector3D(j.x, j.y, j.z), self.Z0, self.view)
 
                         x = round(self.Center.x + d2.x)
                         y = round(self.Center.y + d2.y) if not self.grafFlag else round(self.Center.y - d2.y)

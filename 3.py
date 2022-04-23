@@ -30,7 +30,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     wind = Main_Window() #Создание и инициализация окна приложения
     tools = DrawTool() 
-    wind.view = 'orto'
+    wind.view = 'persp'
 
     wind.show() #Вывод окна приложения на экран
 
@@ -51,57 +51,20 @@ if __name__ == '__main__':
     
     Box.draw3DBox(Vector3D(0,0,0), 100)
 
-    wind.Thread.addEvent(Box.Rotation3DAlf, 'Rotation', (1,'x'))
-    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Rotation2', (1,'y'))
-    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Rotation3', (1,'z'))
+    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_x', (1,'x'))
+    wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_y', (1,'y'))
+    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_z', (1,'z'))
 
-    # Box.Rotation3DAlf(45, 'y')
-    # Box.Rotation3DAlf(45, 'z')
-    # Box.Rotation3DAlf(1, 'z')
-    # Box.Rotation3DAlf(1, 'z')
-    # Box.Rotation3DAlf(1, 'z')
-    # Box.Rotation3DAlf(1, 'z')
-    # Box.Rotation3DAlf(1, 'z')
-    # Box.Rotation3DAlf(1, 'z')
-    # Box.Rotation3DAlf(1, 'z')
-    # Box.Rotation3DAlf(1, 'z')
-    # Box.Rotation3DAlf(1, 'z')
-    # Box.Rotation3DAlf(1, 'z')
-    # Box.Rotation3DAlf(1, 'z')
+
+    Box2 = Image3D('Box', 1)
+    wind.pushImage(Box2)
     
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-    # Box.Rotation3DAlf(1, 'x')
-
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-    # Box.Rotation3DAlf(1, 'y')
-
-    # Box.Rotation3DAlf(45, 'y')
-    # Box.Rotation3DAlf(45, 'z')
-
-    # Box.drawLine3D(Vector3D(-100,-100,-100), Vector3D(100,100,100))
+    Box2.draw3DBox(Vector3D(0,200,0), 100)
     
-    
+    # wind.Thread.addEvent(Box2.Rotation3DAlf, 'Box2_Rotation_x', (1,'x'))
+    # wind.Thread.addEvent(Box2.Rotation3DAlf, 'Box2_Rotation_y', (1,'y'))
+    wind.Thread.addEvent(Box2.Rotation3DAlf, 'Box2_Rotation_z', (1,'z'))
+
 
      
 
