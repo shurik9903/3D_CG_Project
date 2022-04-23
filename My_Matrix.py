@@ -8,18 +8,20 @@ class Matrix_Work():
     def __init__(self) -> None:
         pass
 
-    def Projection2D(self, vec3d:Vector3D, view:str = 'proj') -> Vector2D:
-        z = 1
-        distance = 140
-
-        if view == 'orto':
-            z = 1 / (distance - vec3d.z) if (distance - vec3d.z) else 0
+    def Projection2D(self, vec3d:Vector3D, Z0:float, view:str = 'proj') -> Vector2D:
+        if view == 'persp':
+            vec3d.x = vec3d.x * Z0 / (Z0 + vec3d.z)
+            vec3d.y = vec3d.y * Z0 / (Z0 + vec3d.z)
+            vec3d.z = vec3d.z
 
         v = np.array([vec3d.x, vec3d.y, vec3d.z])
-        m = np.array([[z, 0, 0], [0, z, 0]])
+        m = np.array([[1, 0, 0], [0, 1, 0]])
         v = m.dot(v)
         
         return Vector2D(*v)
+
+    
+
 
     def Mirror2DAxis(self, vec2d:Vector2D, x:bool = False, y:bool = False) -> Vector2D:
         x = -1 if x else 1
@@ -60,24 +62,40 @@ class Matrix_Work():
 
         return Vector2D(*(v.astype(int)))
         
-    def Rotation3DAlf(self, vec3d:Vector3D, alf = 0,  Axis:str = 'x') -> Vector3D:
+    def Rotation3DAlf(self, vec3d:Vector3D, alf = 0,  Axis:str = 'x', origin:Vector3D = None) -> Vector3D:
+
         alf = radians(alf)
 
         v = np.array([vec3d.x, vec3d.y, vec3d.z])
+
+        
+        
+
 
         if Axis == 'x':
             m = np.array([[1, 0, 0],
                           [0, cos(alf), -sin(alf)], 
                           [0, sin(alf),  cos(alf)]])
+
         if Axis == 'y':
             m = np.array([[cos(alf), 0, sin(alf)],
                           [0, 1, 0], 
                           [-sin(alf), 0,  cos(alf)]])
+
         if Axis == 'z':
             m = np.array([[cos(alf), -sin(alf), 0],
                           [sin(alf), cos(alf), 0], 
                           [0, 0, 1]])
         
+        # if origin is not None:
+
+        #     m1 = np.array([[1, 0, 0],[0, 1, 0],[-origin.x, -origin.y, 1]])
+        #     m3 = np.array([[1, 0, 0],[0, 1, 0],[origin.x, origin.y, 1]])
+
+        #     m = m1.dot(m.dot(m3))
+
+        v = v.dot(m)
+
         return Vector3D(*v.dot(m))
 
     def Rotation2DAlfArray(self, Array:list[Vector3D], alf = 0) -> list[Vector3D]:
