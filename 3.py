@@ -51,9 +51,11 @@ if __name__ == '__main__':
     
     Box.draw3DBox(Vector3D(0,0,0), 100)
 
-    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_x', (1,'x'))
-    wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_y', (1,'y'))
-    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_z', (1,'z'))
+    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_x', [Vector3D(1,0,0)])
+    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_y', [Vector3D(0,1,0)])
+    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_z', [Vector3D(0,0,1)])
+
+    wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation', [Vector3D(1,0,0)])
 
 
     Box2 = Image3D('Box', 1)
@@ -61,11 +63,7 @@ if __name__ == '__main__':
     
     Box2.draw3DBox(Vector3D(0,200,0), 100)
     
-    # wind.Thread.addEvent(Box2.Rotation3DAlf, 'Box2_Rotation_x', (1,'x'))
-    # wind.Thread.addEvent(Box2.Rotation3DAlf, 'Box2_Rotation_y', (1,'y'))
-    wind.Thread.addEvent(Box2.Rotation3DAlf, 'Box2_Rotation_z', (1,'z'))
-
-
+    wind.Thread.addEvent(Box2.Rotation3DAlf, 'Box2_Rotation', [Vector3D(1,0,0)])
      
 
     # wind.update()

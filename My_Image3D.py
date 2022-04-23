@@ -73,7 +73,7 @@ class Image3D(DrawTool, Matrix_Work):
         self.putArray(SDraw)
         return SDraw
 
-    def Rotation3DAlf(self, alf=0, Axis: str = 'x', origin:Vector3D = None) :
+    def Rotation3DAlf(self, rotation:Vector3D, origin:Vector3D = None) :
         # return super().Rotation3DAlf(vec3d, alf, Axis)
 
         if origin is None:
@@ -84,7 +84,7 @@ class Image3D(DrawTool, Matrix_Work):
         for i, v1 in self.PixelBuffer.items():
             for j,v2 in v1.items():
                 for l, v3 in v2.items():
-                    new_buffer.append(Pixel3D(super().Rotation3DAlf(Vector3D(i, j, l), alf, Axis, origin), color = v3))
+                    new_buffer.append(Pixel3D(super().Rotation3DAlf(Vector3D(i, j, l), rotation, origin), color = v3))
 
         self.PixelBuffer.clear()
         self.putArray(new_buffer)

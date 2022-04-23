@@ -30,6 +30,7 @@ class DrawThread(QThread):
         self.event_list = dict(sorted(self.event_list.items(), key = lambda item: item[1]['queue']))
         self.pause = False
 
+
     def run(self):
         tick = 0
         while tick <= 360 and not self.stop:

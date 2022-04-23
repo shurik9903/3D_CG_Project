@@ -1,4 +1,3 @@
-from turtle import distance
 from My_Vectors import *
 from math import cos, radians, sin, tan
 
@@ -62,41 +61,32 @@ class Matrix_Work():
 
         return Vector2D(*(v.astype(int)))
         
-    def Rotation3DAlf(self, vec3d:Vector3D, alf = 0,  Axis:str = 'x', origin:Vector3D = None) -> Vector3D:
+    def Rotation3DAlf(self, vec3d:Vector3D, rotation:Vector3D, origin:Vector3D = None) -> Vector3D:
 
-        alf = radians(alf)
+        v = np.array([vec3d.x, vec3d.y, vec3d.z, 1])
 
-        v = np.array([vec3d.x, vec3d.y, vec3d.z])
+        alf, bet, gam = radians(rotation.z), radians(rotation.y), radians(rotation.x)
 
+        m = np.array([[cos(alf) * cos(bet), cos(alf) * sin(bet) * sin(gam) - sin(alf) * cos(gam), cos(alf) * sin(bet) * cos(gam) + sin(alf) * sin(gam), 0],
+                     [sin(alf) * cos(bet), sin(alf) * sin(bet) * sin(gam) + cos(alf) * cos(gam), sin(alf) * sin(bet) * cos(gam) - cos(alf) * sin(gam), 0], 
+                     [-sin(bet), cos(bet) * sin(gam), cos(bet) * cos(gam), 0],
+                     [0, 0, 0 ,1]])
         
-        
 
+        # R = m = np.array([[, , ],
+        #                   [, , ], 
+        #                   [, , ]])
 
-        if Axis == 'x':
-            m = np.array([[1, 0, 0],
-                          [0, cos(alf), -sin(alf)], 
-                          [0, sin(alf),  cos(alf)]])
+        if origin is not None:
 
-        if Axis == 'y':
-            m = np.array([[cos(alf), 0, sin(alf)],
-                          [0, 1, 0], 
-                          [-sin(alf), 0,  cos(alf)]])
+            m1 = np.array([[1, 0, 0, 0],[0, 1, 0, 0],[0, 0, 1, 0],[-origin.x, -origin.y, -origin.z, 1]])
+            m3 = np.array([[1, 0, 0, 0],[0, 1, 0, 0],[0, 0, 1, 0],[origin.x, origin.y, origin.z, 1]])
 
-        if Axis == 'z':
-            m = np.array([[cos(alf), -sin(alf), 0],
-                          [sin(alf), cos(alf), 0], 
-                          [0, 0, 1]])
-        
-        # if origin is not None:
-
-        #     m1 = np.array([[1, 0, 0],[0, 1, 0],[-origin.x, -origin.y, 1]])
-        #     m3 = np.array([[1, 0, 0],[0, 1, 0],[origin.x, origin.y, 1]])
-
-        #     m = m1.dot(m.dot(m3))
+            m = m1.dot(m.dot(m3))
 
         v = v.dot(m)
 
-        return Vector3D(*v.dot(m))
+        return Vector3D(*v)
 
     def Rotation2DAlfArray(self, Array:list[Vector3D], alf = 0) -> list[Vector3D]:
         return [self.Rotation2DAlf(i, alf) for i in Array]
