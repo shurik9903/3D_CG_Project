@@ -31,6 +31,8 @@ if __name__ == '__main__':
     wind = Main_Window() #Создание и инициализация окна приложения
     tools = DrawTool() 
     wind.view = 'persp'
+    
+    
 
     wind.show() #Вывод окна приложения на экран
 
@@ -45,6 +47,11 @@ if __name__ == '__main__':
     wind.grafFlag = True
 
     wind.pushImage(drawAxis(10))
+
+    wind.Camera.location = Vector3D(300, 0, -300)
+    # wind.Camera.rotation = Vector3D(0, -45, 0)
+
+    wind.Thread.addEvent(wind.Camera.AddRotation, 'Camera_Rotation', [Vector3D(0,-1,0)])
 
     Box = Image3D('Box', 1)
     wind.pushImage(Box)

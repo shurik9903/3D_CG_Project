@@ -11,7 +11,31 @@ from My_Image3D import *
 from My_Matrix import *
 from My_Vectors import *
 
+class Camera():
 
+    def __init__(self, location:Vector3D, rotation:Vector3D) -> None:
+        self.location = location
+        self.rotation = rotation
+
+    def AddRotation(self, rotation:Vector3D):
+        self.rotation.x += rotation.x
+        self.rotation.y += rotation.y
+        self.rotation.z += rotation.z
+
+    def SetRotation(self, rotation:Vector3D):
+        self.rotation.x = rotation.x
+        self.rotation.y = rotation.y
+        self.rotation.z = rotation.z
+
+    def AddLocation(self, location:Vector3D):
+        self.location.x += location.x
+        self.location.y += location.y
+        self.location.z += location.z
+
+    def SetLocation(self, location:Vector3D):
+        self.location.x = location.x
+        self.location.y = location.y
+        self.location.z = location.z
 class DrawThread(QThread):
 
     update = pyqtSignal(int)
@@ -58,6 +82,8 @@ class Main_Window(QWidget, QPainter, DrawTool):
     
     def __init__(self, SizeX = 500, SizeY = 500):
         super().__init__()
+
+        self.Camera = Camera(Vector3D(0,0,0), Vector3D(0,0,0))
 
         self.FOV = 45
         self.Z0 = None
@@ -138,7 +164,9 @@ class Main_Window(QWidget, QPainter, DrawTool):
                         pen.setColor(j.color)
                         qp.setPen(pen)
 
-                        d2 = Matrix_Work().Projection2D(Vector3D(j.x, j.y, j.z), self.Z0, self.view)
+                        Obj = Vector3D(j.x - self.Camera.location.x, j.y - self.Camera.location.y, j.z - self.Camera.location.z)
+                        Obj = Matrix_Work().Rotation3DAlf(Obj, self.Camera.rotation, self.Camera.location)
+                        d2 = Matrix_Work().Projection2D(Vector3D(Obj.x, Obj.y, Obj.z), self.Z0, self.view)
 
                         x = round(self.Center.x + d2.x)
                         y = round(self.Center.y + d2.y) if not self.grafFlag else round(self.Center.y - d2.y)
