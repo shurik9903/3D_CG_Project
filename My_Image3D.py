@@ -1,5 +1,5 @@
 from My_Draw import *
-
+from copy import deepcopy
 class Image3D(DrawTool, Matrix_Work):
     def __init__(self, Name:str = "", Layer:int = 0):
         self.Name = Name

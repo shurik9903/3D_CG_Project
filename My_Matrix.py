@@ -71,11 +71,6 @@ class Matrix_Work():
                      [sin(alf) * cos(bet), sin(alf) * sin(bet) * sin(gam) + cos(alf) * cos(gam), sin(alf) * sin(bet) * cos(gam) - cos(alf) * sin(gam), 0], 
                      [-sin(bet), cos(bet) * sin(gam), cos(bet) * cos(gam), 0],
                      [0, 0, 0 ,1]])
-        
-
-        # R = m = np.array([[, , ],
-        #                   [, , ], 
-        #                   [, , ]])
 
         if origin is not None:
 

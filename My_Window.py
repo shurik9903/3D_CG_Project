@@ -10,6 +10,7 @@ from My_Image import *
 from My_Image3D import *
 from My_Matrix import *
 from My_Vectors import *
+from My_Image3D_2 import *
 
 class Camera():
 
@@ -57,7 +58,7 @@ class DrawThread(QThread):
 
     def run(self):
         tick = 0
-        while tick <= 360 and not self.stop:
+        while tick < 360 and not self.stop:
         
             if self.pause:
                 continue
@@ -161,6 +162,21 @@ class Main_Window(QWidget, QPainter, DrawTool):
 
                 if isinstance(i, Image3D):
                     for j in i.getArrayPixel():
+                        pen.setColor(j.color)
+                        qp.setPen(pen)
+
+                        Obj = Vector3D(j.x - self.Camera.location.x, j.y - self.Camera.location.y, j.z - self.Camera.location.z)
+                        Obj = Matrix_Work().Rotation3DAlf(Obj, self.Camera.rotation, self.Camera.location)
+                        d2 = Matrix_Work().Projection2D(Vector3D(Obj.x, Obj.y, Obj.z), self.Z0, self.view)
+
+                        x = round(self.Center.x + d2.x)
+                        y = round(self.Center.y + d2.y) if not self.grafFlag else round(self.Center.y - d2.y)
+
+                        qp.drawPoint(x,y)
+
+                if isinstance(i, Image3D_2):
+                    for j in i.Draw():
+
                         pen.setColor(j.color)
                         qp.setPen(pen)
 

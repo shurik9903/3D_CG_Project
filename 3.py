@@ -31,8 +31,6 @@ if __name__ == '__main__':
     wind = Main_Window() #Создание и инициализация окна приложения
     tools = DrawTool() 
     wind.view = 'persp'
-    
-    
 
     wind.show() #Вывод окна приложения на экран
 
@@ -48,29 +46,40 @@ if __name__ == '__main__':
 
     wind.pushImage(drawAxis(10))
 
-    wind.Camera.location = Vector3D(300, 0, -300)
+    wind.Camera.location = Vector3D(0, 0, 0)
+
     # wind.Camera.rotation = Vector3D(0, -45, 0)
 
-    wind.Thread.addEvent(wind.Camera.AddRotation, 'Camera_Rotation', [Vector3D(0,-1,0)])
+    # wind.Thread.addEvent(wind.Camera.AddRotation, 'Camera_Rotation', [Vector3D(0,-1,0)])
 
-    Box = Image3D('Box', 1)
+
+    Box = Image3D_2('Box', 1)
+    Box.Create3DBox(Vector3D(0,0,0), 100)
+    # print(Box)
     wind.pushImage(Box)
+
+    wind.Thread.addEvent(Box.Rotation, 'Box_Rotation_x', [Vector3D(1,0,0)])
+    wind.Thread.addEvent(Box.Rotation, 'Box_Rotation_y', [Vector3D(0,1,0)])
+    wind.Thread.addEvent(Box.Rotation, 'Box_Rotation_z', [Vector3D(0,0,1)])
+
+    # Box = Image3D('Box', 1)
+    # wind.pushImage(Box)
     
-    Box.draw3DBox(Vector3D(0,0,0), 100)
+    # Box.draw3DBox(Vector3D(0,0,0), 100)
 
-    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_x', [Vector3D(1,0,0)])
-    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_y', [Vector3D(0,1,0)])
-    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_z', [Vector3D(0,0,1)])
+    # # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_x', [Vector3D(1,0,0)])
+    # # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_y', [Vector3D(0,1,0)])
+    # # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation_z', [Vector3D(0,0,1)])
 
-    wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation', [Vector3D(1,0,0)])
+    # wind.Thread.addEvent(Box.Rotation3DAlf, 'Box_Rotation', [Vector3D(1,0,0)])
 
 
-    Box2 = Image3D('Box', 1)
-    wind.pushImage(Box2)
+    # Box2 = Image3D('Box', 1)
+    # wind.pushImage(Box2)
     
-    Box2.draw3DBox(Vector3D(0,200,0), 100)
+    # Box2.draw3DBox(Vector3D(0,200,0), 100)
     
-    wind.Thread.addEvent(Box2.Rotation3DAlf, 'Box2_Rotation', [Vector3D(1,0,0)])
+    # wind.Thread.addEvent(Box2.Rotation3DAlf, 'Box2_Rotation', [Vector3D(1,0,0)])
      
 
     # wind.update()

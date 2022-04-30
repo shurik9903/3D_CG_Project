@@ -10,7 +10,10 @@ class Vector2D():
         return (self.x, self.y)
 
     def __str__(self) -> str:
-        return f'{self.x}, {self.y}'
+        return f'< {self.x}, {self.y} >'
+
+    def __repr__(self):
+        return f'< {self.x}, {self.y} >'
 class Vector3D():
     def __init__(self, *xyz):
         self.x = xyz[0]
@@ -24,4 +27,7 @@ class Vector3D():
         return (self.x, self.y, self.z)
 
     def __str__(self) -> str:
-        return f'{self.x}, {self.y}, {self.z}'
+        return f'< {self.x}, {self.y}, {self.z} >'
+
+    def __repr__(self):
+        return f'< {self.x}, {self.y}, {self.z} >'

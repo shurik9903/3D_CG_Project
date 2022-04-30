@@ -3,8 +3,6 @@ from PyQt5.QtGui import QColor
 from My_Vectors import *
 from My_Matrix import *
 
-from copy import deepcopy
-
 import numpy as np
 
 class Pixel(Vector2D):
@@ -45,6 +43,8 @@ class DrawTool():
         sy =  1 if vec0.y < vec1.y else -1
         error = dx + dy
         
+        
+
         while True:
             line.append(Pixel(vec0, color))
             if vec0.x == vec1.x and vec0.y == vec1.y: break
@@ -62,8 +62,11 @@ class DrawTool():
 
         return line
 
-    def drawLine3D(self, vec0:Vector3D, vec1:Vector3D, color:QColor = QColor(0,0,0)) -> list[Pixel3D]:
+    def drawLine3D(self, vec_0:Vector3D, vec_1:Vector3D, color:QColor = QColor(0,0,0)) -> list[Pixel3D]:
         ListOfPoints = []
+
+        vec0 = Vector3D(round(vec_0.x), round(vec_0.y), round(vec_0.z))
+        vec1 = Vector3D(round(vec_1.x), round(vec_1.y), round(vec_1.z))
 
         ListOfPoints.append(Pixel3D(vec0,color))
 
