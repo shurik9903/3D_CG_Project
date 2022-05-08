@@ -121,12 +121,12 @@ class Main_Window(QWidget, QPainter, DrawTool):
 
     def pushAllImage(self, PImage):
         if isinstance(PImage, list):
-            for i in PImage:
-                self.pushImage(i)
+            for image in PImage:
+                self.pushImage(image)
 
     def getImage(self, Name):
-        for i in self.FullImage:
-            for j in i.items()[1]:
+        for image in self.FullImage:
+            for j in image.items()[1]:
                 if j.Name == Name:
                     return j
         return None
@@ -148,10 +148,10 @@ class Main_Window(QWidget, QPainter, DrawTool):
         pen = self.pen   
 
         for k in sorted(self.FullImage.keys()):
-            for i in self.FullImage[k]:
+            for image in self.FullImage[k]:
 
-                if isinstance(i, Image):
-                    for j in i.getArrayPixel():
+                if isinstance(image, Image):
+                    for j in image.getArrayPixel():
                         pen.setColor(j.color)
                         qp.setPen(pen)
 
@@ -160,8 +160,8 @@ class Main_Window(QWidget, QPainter, DrawTool):
 
                         qp.drawPoint(x,y)
 
-                if isinstance(i, Image3D):
-                    for j in i.getArrayPixel():
+                if isinstance(image, Image3D):
+                    for j in image.getArrayPixel():
                         pen.setColor(j.color)
                         qp.setPen(pen)
 
@@ -174,19 +174,24 @@ class Main_Window(QWidget, QPainter, DrawTool):
 
                         qp.drawPoint(x,y)
 
-                if isinstance(i, Image3D_2):
-                    for j in i.Draw():
+                if isinstance(image, Image3D_2):
+                    for edge in image.Edge['Edge'].keys():
 
-                        pen.setColor(j.color)
-                        qp.setPen(pen)
+                        Obj = []
+                        
+                        for vertex in edge:
 
-                        Obj = Vector3D(j.x - self.Camera.location.x, j.y - self.Camera.location.y, j.z - self.Camera.location.z)
-                        Obj = Matrix_Work().Rotation3DAlf(Obj, self.Camera.rotation, self.Camera.location)
-                        d2 = Matrix_Work().Projection2D(Vector3D(Obj.x, Obj.y, Obj.z), self.Z0, self.view)
+                            Cam_Ver = Vector3D(vertex.x - self.Camera.location.x, vertex.y - self.Camera.location.y, vertex.z - self.Camera.location.z)
+                            Obj.append(Matrix_Work().Rotation3DAlf(Cam_Ver, self.Camera.rotation, self.Camera.location))
+
+
+                        Obj = Matrix_Work().Projection2D(Vector3D(Obj.x, Obj.y, Obj.z), self.Z0, self.view)
 
                         x = round(self.Center.x + d2.x)
                         y = round(self.Center.y + d2.y) if not self.grafFlag else round(self.Center.y - d2.y)
 
+                        pen.setColor(image.Color)
+                        qp.setPen(pen)
                         qp.drawPoint(x,y)
 
 
