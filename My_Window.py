@@ -1,5 +1,5 @@
+from audioop import cross
 from cmath import pi
-from multiprocessing import Event
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -11,6 +11,7 @@ from My_Image3D import *
 from My_Matrix import *
 from My_Vectors import *
 from My_Image3D_2 import *
+from Triangulation import Triangulation
 
 class Camera():
 
@@ -144,6 +145,7 @@ class Main_Window(QWidget, QPainter, DrawTool):
         self.fullDraw(qp)
         qp.end()
 
+
     def fullDraw(self,qp):
         pen = self.pen   
 
@@ -175,24 +177,44 @@ class Main_Window(QWidget, QPainter, DrawTool):
                         qp.drawPoint(x,y)
 
                 if isinstance(image, Image3D_2):
+                    pen.setColor(image.Color)
+                    qp.setPen(pen)
+
+                    Triangle = []
+
+
+                    
+
+                    for face in image.Face['Face'].keys():
+                        Triangle.append(Triangulation(face))
+
+                        for edge in TrianglEdge:
+                            Edge3D.append(edge)
+
                     for edge in image.Edge['Edge'].keys():
+                        Edge3D.append(edge)
+
+                    for edge in Edge3D:
 
                         Obj = []
+
+                        normal = self.normal(edge[0], edge[1])
+                        cam_norm = normal.x * 
+
+                        if normal.z < 0:
+                            for vertex in edge:
+
+                                Cam_Ver = Vector3D(vertex.x - self.Camera.location.x, vertex.y - self.Camera.location.y, vertex.z - self.Camera.location.z)
+                                Cam_Ver = (Matrix_Work().Rotation3DAlf(Cam_Ver, self.Camera.rotation, self.Camera.location))
+                                Obj.append(Matrix_Work().Projection2D(Vector3D(Cam_Ver.x, Cam_Ver.y, Cam_Ver.z), self.Z0, self.view))
+
+                            for d2 in DrawTool().drawLine(Obj[0], Obj[1]):
+                                x = round(self.Center.x + d2.x)
+                                y = round(self.Center.y + d2.y) if not self.grafFlag else round(self.Center.y - d2.y)
+
+                                qp.drawPoint(x,y)
                         
-                        for vertex in edge:
 
-                            Cam_Ver = Vector3D(vertex.x - self.Camera.location.x, vertex.y - self.Camera.location.y, vertex.z - self.Camera.location.z)
-                            Obj.append(Matrix_Work().Rotation3DAlf(Cam_Ver, self.Camera.rotation, self.Camera.location))
-
-
-                        Obj = Matrix_Work().Projection2D(Vector3D(Obj.x, Obj.y, Obj.z), self.Z0, self.view)
-
-                        x = round(self.Center.x + d2.x)
-                        y = round(self.Center.y + d2.y) if not self.grafFlag else round(self.Center.y - d2.y)
-
-                        pen.setColor(image.Color)
-                        qp.setPen(pen)
-                        qp.drawPoint(x,y)
 
 
     def putPixel(self, pixel:Pixel):
@@ -215,9 +237,3 @@ class Main_Window(QWidget, QPainter, DrawTool):
                 percent_y = 1 - abs(y - rounded_y)
                 percent = percent_x * percent_y
                 self.putPixel(Pixel(rounded_x, rounded_y))
-
-
-    # def closeEvent(self, event):
-    #     self.Thread.stop = True
-    
-    #     self.Thread.exec_()
