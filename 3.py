@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication
 import sys
 
 from My_Window import *
+from Triangulation import *
 
 def drawAxis(valueOfDivision):
 
@@ -61,6 +62,11 @@ if __name__ == '__main__':
     wind.Thread.addEvent(Box.Rotation, 'Box_Rotation_x', [Vector3D(1,0,0)])
     wind.Thread.addEvent(Box.Rotation, 'Box_Rotation_y', [Vector3D(0,1,0)])
     wind.Thread.addEvent(Box.Rotation, 'Box_Rotation_z', [Vector3D(0,0,1)])
+
+    # print(list(Box.Face['Face'].keys())[0])
+    # print(list(Box.Face['Face'].keys())[0].size)
+    # print(Triangulation(list(Box.Face['Face'].keys())[0]))
+
 
     # Box = Image3D('Box', 1)
     # wind.pushImage(Box)

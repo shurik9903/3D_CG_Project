@@ -1,3 +1,4 @@
+from math import sqrt
 from tokenize import Double
 from PyQt5.QtGui import QColor
 from My_Vectors import *
@@ -9,7 +10,6 @@ class Pixel(Vector2D):
     def __init__(self, vec2d:Vector2D, color = QColor(0,0,0)):
         super().__init__(vec2d.x, vec2d.y)
         self.color = color
-
 class Pixel3D(Vector3D):
     def __init__(self, vec3d:Vector3D, color = QColor(0,0,0)):
         super().__init__(vec3d.x, vec3d.y, vec3d.z)
@@ -32,6 +32,22 @@ class DrawTool():
         FlatArray = np.array(Array).reshape(-1)
         return [self.convertToPixel3D(i, color) for i in FlatArray]
 
+    def normal(self, v1:Vector3D, v2:Vector3D) -> Vector3D:
+
+        i = np.linalg.det([[v1.y, v1.z],[v2.y, v2.z]])
+        j = np.linalg.det([[v1.x, v1.z],[v2.x, v2.z]])
+        k = np.linalg.det([[v1.x, v1.y],[v2.x, v2.y]])
+
+        normal = Vector3D(i,j,k)
+
+        l = sqrt(normal.x**2 + normal.y**2 + normal.z**2)
+
+        normal.x = normal.x / l
+        normal.y = normal.y / l
+        normal.z = normal.z / l
+
+        return normal
+
     def drawLine(self, vec0:Vector2D, vec1:Vector2D, color:QColor = QColor(0,0,0)) -> list[Pixel]:
         #Инкрементный алгоритм растеризации
         
@@ -47,16 +63,16 @@ class DrawTool():
 
         while True:
             line.append(Pixel(vec0, color))
-            if vec0.x == vec1.x and vec0.y == vec1.y: break
+            if round(vec0.x) == round(vec1.x) and round(vec0.y) == round(vec1.y): break
             e2 = 2 * error
 
             if e2 >= dy:
-                if vec0.x == vec1.x: break
+                if round(vec0.x) == round(vec1.x): break
                 error = error + dy
                 vec0.x = vec0.x + sx
             
             if e2 <= dx:
-                if vec0.y == vec1.y: break
+                if round(vec0.y) == round(vec1.y): break
                 error = error + dx
                 vec0.y = vec0.y + sy
 

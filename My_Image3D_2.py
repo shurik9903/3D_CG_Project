@@ -95,11 +95,11 @@ class Image3D_2():
         self.SetFace( DLL((BoxVertex[0], BoxVertex[1],BoxVertex[2], BoxVertex[3])) )
         self.SetFace( DLL((BoxVertex[4], BoxVertex[5],BoxVertex[6], BoxVertex[7])) )
 
-        self.SetFace( DLL((BoxVertex[0], BoxVertex[1],BoxVertex[4], BoxVertex[5])) )
-        self.SetFace( DLL((BoxVertex[2], BoxVertex[3],BoxVertex[6], BoxVertex[7])) )
+        self.SetFace( DLL((BoxVertex[0], BoxVertex[1],BoxVertex[5], BoxVertex[4])) )
+        self.SetFace( DLL((BoxVertex[2], BoxVertex[3],BoxVertex[7], BoxVertex[6])) )
     
-        self.SetFace( DLL((BoxVertex[0], BoxVertex[3],BoxVertex[4], BoxVertex[7])) )
-        self.SetFace( DLL((BoxVertex[1], BoxVertex[2],BoxVertex[5], BoxVertex[6])) )
+        self.SetFace( DLL((BoxVertex[0], BoxVertex[3],BoxVertex[7], BoxVertex[4])) )
+        self.SetFace( DLL((BoxVertex[1], BoxVertex[2],BoxVertex[6], BoxVertex[5])) )
 
     def RewritVertex(self, id, vertex):
         pass
@@ -110,6 +110,8 @@ class Image3D_2():
 
         for i in self.Vertex['vertex'].keys():
             i.x, i.y, i.z = Matrix_Work().Rotation3DAlf(i, rotation, origin).get()
+
+
 
     # def Triangle(self):
     #     All = []

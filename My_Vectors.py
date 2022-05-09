@@ -14,6 +14,19 @@ class Vector2D():
 
     def __repr__(self):
         return f'< {self.x}, {self.y} >'
+
+    def __add__(self, other):
+        x = self.x + other.x
+        y = self.y + other.y
+
+        return Vector2D(x, y)
+
+    def __sub__(self, other):
+        x = self.x - other.x
+        y = self.y - other.y
+
+        return Vector2D(x, y)
+
 class Vector3D():
     def __init__(self, *xyz):
         self.x = xyz[0]
@@ -26,8 +39,25 @@ class Vector3D():
     def get(self):
         return (self.x, self.y, self.z)
 
-    def __str__(self) -> str:
+    def out(self):
         return f'< {self.x}, {self.y}, {self.z} >'
 
+    def __str__(self) -> str:
+        return self.out()
+
     def __repr__(self):
-        return f'< {self.x}, {self.y}, {self.z} >'
+        return self.out()
+
+    def __add__(self, other):
+        x = self.x + other.x
+        y = self.y + other.y
+        z = self.z + other.z
+
+        return Vector3D(x,y,z)
+
+    def __sub__(self, other):
+        x = self.x - other.x
+        y = self.y - other.y
+        z = self.z - other.z
+
+        return Vector3D(x,y,z)
